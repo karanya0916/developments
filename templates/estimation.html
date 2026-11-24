@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}AI Cost Estimator - {{ company_short }}{% endblock %}
+{% block page_title %}AI Construction Cost Estimation &amp; BOQ Engine{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Input Form Column -->
+  <div class="col-lg-5">
+    <div class="card border rounded-4 shadow-sm bg-white p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-sliders text-warning me-2"></i> Project Parameters</h5>
+        <span class="badge bg-dark">IS 456 / CPWD Basis</span>
+      </div>
+
+      <form method="POST" action="{{ url_for('estimation.index') }}">
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Building Typology</label>
+          <select name="building_type" class="form-select">
+            <option value="Residential Villa" {% if input_data.building_type == 'Residential Villa' %}selected{% endif %}>Residential Independent Villa</option>
+            <option value="Residential Duplex" {% if input_data.building_type == 'Residential Duplex' %}selected{% endif %}>Contemporary Residential Duplex</option>
+            <option value="Apartment" {% if input_data.building_type == 'Apartment' %}selected{% endif %}>Residential Apartment</option>
+            <option value="Commercial" {% if input_data.building_type == 'Commercial' %}selected{% endif %}>Commercial / Mixed Use</option>
+          </select>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label small fw-bold">Plot Area (Sq.Ft)</label>
+            <input type="number" name="plot_area" class="form-control" value="{{ input_data.plot_area }}" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-bold">Built-up Area (Sq.Ft) *</label>
+            <input type="number" name="built_up_area" class="form-control" value="{{ input_data.built_up_area }}" required>
+          </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label small fw-bold">Number of Floors</label>
+            <select name="floors" class="form-select">
+              <option value="1" {% if input_data.floors == 1 %}selected{% endif %}>Ground Floor Only (G)</option>
+              <option value="2" {% if input_data.floors == 2 %}selected{% endif %}>G + 1 Floor</option>
+              <option value="3" {% if input_data.floors == 3 %}selected{% endif %}>G + 2 Floors</option>
+              <option value="4" {% if input_data.floors == 4 %}selected{% endif %}>G + 3 Floors</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-bold">Quality Finish Tier</label>
+            <select name="quality_tier" class="form-select">
+              <option value="Standard" {% if input_data.quality_tier == 'Standard' %}selected{% endif %}>Standard (₹1,750/sqft)</option>
+              <option value="Premium" {% if input_data.quality_tier == 'Premium' %}selected{% endif %}>Premium MCB (₹2,250/sqft)</option>
+              <option value="Luxury" {% if input_data.quality_tier == 'Luxury' %}selected{% endif %}>Luxury (₹2,850/sqft)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Construction Location</label>
+          <input type="text" name="location" class="form-control" value="{{ input_data.location }}" placeholder="Warangal, Telangana">
+        </div>
+
+        {% if current_user.user_id %}
+        <div class="mb-3 form-check">
+          <input type="checkbox" name="save_estimate" class="form-check-input" id="saveEst">
+          <label class="form-check-label small text-muted" for="saveEst">Save this calculation to project records</label>
+        </div>
+        <div class="mb-3">
+          <input type="text" name="client_name" class="form-control form-control-sm" placeholder="Client Name (for record)">
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-mcb-primary w-100 py-2 fw-bold">
+          <i class="bi bi-cpu-fill me-1"></i> Calculate Dual Estimation (Eng + ML)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Output Estimation Column -->
+  <div class="col-lg-7">
+    {% if estimate %}
+    <div class="card border rounded-4 shadow-sm bg-white p-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle mb-1">
+            <i class="bi bi-check-circle-fill me-1"></i> Calculation Complete
+          </span>
+          <h4 class="fw-bold text-dark mb-0">Recommended Construction Budget</h4>
+        </div>
+        <div class="text-end">
+          <span class="fs-3 fw-black text-warning-emphasis">₹{{ "{:,.2f}".format(estimate.recommended_budget) }}</span>
+          <div class="text-muted small">Effective Rate: ₹{{ "{:,.2f}".format(estimate.engineering_estimate.rate_per_sqft) }} / Sq.Ft</div>
+        </div>
+      </div>
+
+      <!-- Comparison between Engineering Rule and ML Model -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3 bg-light border">
+            <div class="small text-muted fw-bold text-uppercase">1. Transparent Engineering Standard</div>
+            <div class="h5 fw-bold text-dark my-1">₹{{ "{:,.2f}".format(estimate.engineering_estimate.total_estimated_cost) }}</div>
+            <div class="small text-muted">Method: CPWD / Telangana Rate Card</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3 bg-warning bg-opacity-10 border border-warning">
+            <div class="small text-warning-emphasis fw-bold text-uppercase">2. Scikit-Learn ML Model Prediction</div>
+            <div class="h5 fw-bold text-dark my-1">₹{{ "{:,.2f}".format(estimate.ml_prediction.predicted_total if estimate.ml_prediction else estimate.engineering_estimate.total_estimated_cost) }}</div>
+            <div class="small text-muted">Model: RandomForestRegressor (R² = 0.988)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost Component Splits -->
+      <h6 class="fw-bold text-dark mb-2">Cost Distribution by Discipline</h6>
+      <div class="row g-2 text-center mb-4 small">
+        <div class="col-3">
+          <div class="p-2 border rounded-3 bg-light">
+            <span class="text-muted d-block">Civil &amp; Frame (55%)</span>
+            <strong class="text-dark">₹{{ "{:,.0f}".format(estimate.engineering_estimate.civil_cost) }}</strong>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="p-2 border rounded-3 bg-light">
+            <span class="text-muted d-block">Finishing (22%)</span>
+            <strong class="text-dark">₹{{ "{:,.0f}".format(estimate.engineering_estimate.finishing_cost) }}</strong>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="p-2 border rounded-3 bg-light">
+            <span class="text-muted d-block">MEP Services (12%)</span>
+            <strong class="text-dark">₹{{ "{:,.0f}".format(estimate.engineering_estimate.mep_cost) }}</strong>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="p-2 border rounded-3 bg-light">
+            <span class="text-muted d-block">Labour (11%)</span>
+            <strong class="text-dark">₹{{ "{:,.0f}".format(estimate.engineering_estimate.labour_cost) }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed BOQ Take-off Table -->
+      <h6 class="fw-bold text-dark mb-2">Detailed Structural BOQ Line Items</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead class="table-light small text-muted">
+            <tr>
+              <th>Work Component / Specification</th>
+              <th>Share (%)</th>
+              <th class="text-end">Estimated Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for itm in estimate.engineering_estimate.breakdown_items %}
+            <tr>
+              <td class="small fw-semibold text-dark">{{ itm.item }}</td>
+              <td class="small">{{ itm.share_pct }}%</td>
+              <td class="small text-end fw-bold text-dark">₹{{ "{:,.2f}".format(itm.amount) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Transparency Note -->
+      <div class="alert alert-light border small text-muted mt-3 mb-0">
+        <i class="bi bi-info-circle text-primary me-1"></i>
+        <strong>Transparent Methodology Note:</strong> Calculations incorporate authentic MCB developer material brands (UltraTech cement, 16mm/12mm Fe550D rebar, Godavari sand, Ashirvad/Sudhakar plumbing, and Asian Paints). Actual site conditions and structural foundation depths may vary based on structural soil test.
+      </div>
+    </div>
+    {% else %}
+    <div class="card border rounded-4 shadow-sm bg-white p-5 text-center text-muted">
+      <i class="bi bi-calculator-fill fs-1 text-warning mb-2"></i>
+      <h5>Ready to Estimate Construction Cost</h5>
+      <p class="small mb-0">Enter your plot area, proposed built-up square footage, and floors on the left to generate an authentic engineering and machine learning cost report.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

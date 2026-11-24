@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dashboard{% endblock %} - {{ company_short }}</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- MCB Admin Sidebar -->
+  <aside class="mcb-sidebar">
+    <div class="mcb-sidebar-brand">
+      <img src="{{ url_for('static', filename='images/mcb_logo.svg') }}" alt="MCB Logo">
+    </div>
+
+    <div class="mcb-nav-heading">Main Navigation</div>
+    <a href="{{ url_for('dashboard.index') }}" class="mcb-nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+      <i class="bi bi-speedometer2"></i> Executive Dashboard
+    </a>
+    <a href="{{ url_for('projects.list_projects') }}" class="mcb-nav-link {% if 'projects' in request.endpoint %}active{% endif %}">
+      <i class="bi bi-building"></i> Project Management
+    </a>
+    <a href="{{ url_for('site_diary.index') }}" class="mcb-nav-link {% if 'site_diary' in request.endpoint %}active{% endif %}">
+      <i class="bi bi-journal-bookmark-fill text-warning"></i> Site Diary & Expenses
+    </a>
+
+    <div class="mcb-nav-heading">AI & Engineering Services</div>
+    <a href="{{ url_for('estimation.index') }}" class="mcb-nav-link {% if 'estimation' in request.endpoint %}active{% endif %}">
+      <i class="bi bi-calculator"></i> AI Cost Estimator
+    </a>
+    <a href="{{ url_for('materials.prediction') }}" class="mcb-nav-link {% if request.endpoint == 'materials.prediction' %}active{% endif %}">
+      <i class="bi bi-cpu"></i> Material Forecast (ML)
+    </a>
+    <a href="{{ url_for('progress.index') }}" class="mcb-nav-link {% if 'progress' in request.endpoint %}active{% endif %}">
+      <i class="bi bi-camera-reels"></i> Site Progress & Vision
+    </a>
+    <a href="{{ url_for('chatbot.index') }}" class="mcb-nav-link {% if 'chatbot' in request.endpoint %}active{% endif %}">
+      <i class="bi bi-robot"></i> AI Construction Assistant
+    </a>
+
+    <div class="mcb-nav-heading">Site Operations & Inventory</div>
+    <a href="{{ url_for('materials.inventory') }}" class="mcb-nav-link {% if request.endpoint == 'materials.inventory' %}active{% endif %}">
+      <i class="bi bi-boxes"></i> Material Inventory
+    </a>
+    <a href="{{ url_for('workforce.index') }}" class="mcb-nav-link {% if request.endpoint == 'workforce.index' %}active{% endif %}">
+      <i class="bi bi-people-fill"></i> Workforce & Labour
+    </a>
+    <a href="{{ url_for('workforce.attendance') }}" class="mcb-nav-link {% if request.endpoint == 'workforce.attendance' %}active{% endif %}">
+      <i class="bi bi-calendar-check"></i> Daily Attendance
+    </a>
+    <a href="{{ url_for('expenses.index') }}" class="mcb-nav-link {% if 'expenses' in request.endpoint %}active{% endif %}">
+      <i class="bi bi-wallet2"></i> Budget & Expenses
+    </a>
+    <a href="{{ url_for('weather.index') }}" class="mcb-nav-link {% if 'weather' in request.endpoint %}active{% endif %}">
+      <i class="bi bi-cloud-sun"></i> Weather Telemetry
+    </a>
+
+    <div class="mcb-nav-heading">External</div>
+    <a href="{{ url_for('public.index') }}" class="mcb-nav-link" target="_blank">
+      <i class="bi bi-globe"></i> View Public Website
+    </a>
+    <a href="{{ url_for('auth.logout') }}" class="mcb-nav-link text-danger mt-3">
+      <i class="bi bi-box-arrow-right text-danger"></i> Sign Out
+    </a>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="mcb-main-content">
+    
+    <!-- Topbar -->
+    <header class="mcb-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button id="sidebarToggle" class="btn btn-outline-secondary btn-sm d-lg-none">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <h5 class="mb-0 fw-bold text-dark">{% block page_title %}Dashboard{% endblock %}</h5>
+          <small class="text-muted">Builder: <span class="fw-semibold text-warning-emphasis">{{ primary_builder }}</span> | {{ office_address }}</small>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <a href="{{ url_for('site_diary.create_entry') }}" class="btn btn-mcb-primary btn-sm d-flex align-items-center gap-2">
+          <i class="bi bi-journal-plus"></i> Write Daily Site Diary
+        </a>
+
+        <!-- User Dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border" type="button" data-bs-toggle="dropdown">
+            <div class="rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width:32px; height:32px;">
+              {{ current_user.full_name[0] if current_user.full_name else 'U' }}
+            </div>
+            <div class="text-start d-none d-sm-block">
+              <span class="d-block fw-semibold small">{{ current_user.full_name }}</span>
+              <span class="d-block text-muted" style="font-size:0.75rem;">{{ current_user.role }}</span>
+            </div>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="bi bi-person me-2"></i> My Profile</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('dashboard.index') }}"><i class="bi bi-grid me-2"></i> Dashboard</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Page Body -->
+    {% block content %}{% endblock %}
+
+  </main>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

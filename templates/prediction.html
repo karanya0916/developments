@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Material Prediction - {{ company_short }}{% endblock %}
+{% block page_title %}AI Material Requirement Forecasting &amp; Procurement Planner{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card border rounded-4 shadow-sm bg-white p-4">
+      <h5 class="fw-bold text-dark mb-3"><i class="bi bi-cpu-fill text-warning me-2"></i> Input Parameters</h5>
+      <form method="POST" action="{{ url_for('materials.prediction') }}">
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Built-up Area (Sq.Ft) *</label>
+          <input type="number" name="built_up_area" class="form-control" value="{{ input_data.built_up_area }}" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Floors</label>
+          <select name="floors" class="form-select">
+            <option value="1" {% if input_data.floors == 1 %}selected{% endif %}>Ground Floor (G)</option>
+            <option value="2" {% if input_data.floors == 2 %}selected{% endif %}>G + 1 (Duplex)</option>
+            <option value="3" {% if input_data.floors == 3 %}selected{% endif %}>G + 2 Floors</option>
+            <option value="4" {% if input_data.floors == 4 %}selected{% endif %}>G + 3 Floors</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Quality Finish Tier</label>
+          <select name="quality_tier" class="form-select">
+            <option value="Standard" {% if input_data.quality_tier == 'Standard' %}selected{% endif %}>Standard</option>
+            <option value="Premium" {% if input_data.quality_tier == 'Premium' %}selected{% endif %}>Premium MCB</option>
+            <option value="Luxury" {% if input_data.quality_tier == 'Luxury' %}selected{% endif %}>Luxury</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Construction Location</label>
+          <input type="text" name="location" class="form-control" value="{{ input_data.location }}">
+        </div>
+        <button type="submit" class="btn btn-mcb-primary w-100 py-2 fw-bold">
+          <i class="bi bi-magic me-1"></i> Forecast Material Needs
+        </button>
+      </form>
+
+      <div class="mt-4 p-3 rounded-3 bg-light border small text-muted">
+        <strong>Dual Methodology:</strong>
+        <p class="mb-0 mt-1">Runs both IS 456 standard empirical take-offs and a Scikit-Learn MultiOutput regression model trained on 1,200 structural records, then checks live warehouse inventory for immediate shortage alerts.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    {% if prediction %}
+    <!-- Summary Comparison Cards -->
+    <div class="card border rounded-4 shadow-sm bg-white p-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle mb-1">
+            <i class="bi bi-check-circle-fill me-1"></i> AI Forecast Ready
+          </span>
+          <h5 class="fw-bold text-dark mb-0">Structural Material Requirement Take-Off</h5>
+        </div>
+        <span class="badge bg-dark">Area: {{ prediction.engineering_specifications.built_up_area }} Sq.Ft</span>
+      </div>
+
+      {% if prediction.ml_forecast %}
+      <div class="alert alert-primary p-3 rounded-3 mb-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-cpu-fill fs-5 text-primary"></i>
+          <strong>Scikit-Learn MultiOutputRegressor Output (R² = 0.994):</strong>
+        </div>
+        <div class="row g-2 text-center small">
+          <div class="col-sm-4 col-md-2">
+            <div class="p-2 border rounded bg-white">
+              <span class="text-muted d-block">Cement</span>
+              <strong class="text-dark">{{ prediction.ml_forecast.cement_bags }} Bags</strong>
+            </div>
+          </div>
+          <div class="col-sm-4 col-md-2">
+            <div class="p-2 border rounded bg-white">
+              <span class="text-muted d-block">TMT Steel</span>
+              <strong class="text-dark">{{ prediction.ml_forecast.steel_tons }} Tons</strong>
+            </div>
+          </div>
+          <div class="col-sm-4 col-md-2">
+            <div class="p-2 border rounded bg-white">
+              <span class="text-muted d-block">River Sand</span>
+              <strong class="text-dark">{{ prediction.ml_forecast.sand_tons }} Tons</strong>
+            </div>
+          </div>
+          <div class="col-sm-4 col-md-3">
+            <div class="p-2 border rounded bg-white">
+              <span class="text-muted d-block">Bricks</span>
+              <strong class="text-dark">{{ "{:,}".format(prediction.ml_forecast.bricks_count) }} Pcs</strong>
+            </div>
+          </div>
+          <div class="col-sm-4 col-md-3">
+            <div class="p-2 border rounded bg-white">
+              <span class="text-muted d-block">Paint</span>
+              <strong class="text-dark">{{ prediction.ml_forecast.paint_liters }} Liters</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Transparent Engineering Specification List -->
+      <h6 class="fw-bold text-dark mb-2">Itemized Engineering Quantity Schedule (MCB Standard)</h6>
+      <div class="table-responsive mb-4">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead class="table-light small text-muted">
+            <tr>
+              <th>Material &amp; Category</th>
+              <th>Approved Brand</th>
+              <th>Quantity</th>
+              <th>Unit Rate</th>
+              <th class="text-end">Est. Cost (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for itm in prediction.engineering_specifications.specifications %}
+            <tr>
+              <td>
+                <div class="fw-bold small text-dark">{{ itm.material }}</div>
+                <div class="text-muted" style="font-size: 0.72rem;">{{ itm.basis }}</div>
+              </td>
+              <td><span class="badge bg-light text-dark border">{{ itm.brand }}</span></td>
+              <td><strong class="text-dark">{{ itm.estimated_qty }}</strong> <small class="text-muted">{{ itm.unit }}</small></td>
+              <td class="small">₹{{ "{:,.2f}".format(itm.approx_rate) }}</td>
+              <td class="small text-end fw-bold text-dark">₹{{ "{:,.2f}".format(itm.estimated_cost) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Warehouse Stock Shortage & Procurement Audit -->
+      <h6 class="fw-bold text-dark mb-2"><i class="bi bi-bell-fill text-warning me-1"></i> Warehouse Stock Audit &amp; Procurement Actions</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered align-middle mb-0">
+          <thead class="table-light small text-muted">
+            <tr>
+              <th>Material</th>
+              <th>Required</th>
+              <th>In Warehouse</th>
+              <th>Deficit</th>
+              <th>Urgency</th>
+              <th>Recommended Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rec in prediction.procurement_recommendations %}
+            <tr>
+              <td class="fw-semibold small text-dark">{{ rec.material }}</td>
+              <td class="small">{{ rec.required_qty }} {{ rec.unit }}</td>
+              <td class="small">{{ rec.current_stock }} {{ rec.unit }}</td>
+              <td class="small fw-bold text-danger">{{ rec.shortage }} {{ rec.unit }}</td>
+              <td>
+                <span class="badge {% if rec.urgency == 'High' %}bg-danger{% elif rec.urgency == 'Medium' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                  {{ rec.urgency }}
+                </span>
+              </td>
+              <td class="small text-muted">{{ rec.action }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="card border rounded-4 shadow-sm bg-white p-5 text-center text-muted">
+      <i class="bi bi-cpu fs-1 text-warning mb-2"></i>
+      <h5>Run AI Material Forecasting</h5>
+      <p class="small mb-0">Specify project square footage and floors to calculate concrete bags, steel tons, brick counts, and audit warehouse inventory.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

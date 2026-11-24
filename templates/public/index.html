@@ -1,0 +1,369 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}
+  {% if lang == 'te' %}మమత కన్‌స్ట్రక్షన్స్ అండ్ బిల్డర్స్ - వరంగల్{% else %}Mamatha Constructions & Builders - Warangal{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="mcb-public-hero text-center text-lg-start">
+  <div class="container py-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <div class="mcb-trust-badge">
+          <i class="bi bi-shield-check text-warning"></i>
+          {% if lang == 'te' %}
+            వరంగల్ మరియు పరిసర ప్రాంతాలలో విశ్వసనీయ గృహ నిర్మాణ భాగస్వామి
+          {% else %}
+            Trusted Residential Builder in Warangal & Telangana
+          {% endif %}
+        </div>
+        <h1 class="display-4 fw-black text-white mb-3">
+          {% if lang == 'te' %}
+            మీ కలల ఇల్లు — <span class="text-warning">శ్రద్ధతో ప్రణాళిక, నమ్మకంతో నిర్మాణం.</span>
+          {% else %}
+            Your Dream Home. <span class="text-warning">Planned with Care, Built with Confidence.</span>
+          {% endif %}
+        </h1>
+        <p class="lead text-light opacity-90 mb-4" style="max-width: 620px;">
+          {% if lang == 'te' %}
+            స్థలం ఎంపిక నుంచి ఇంటి తాళాలు అందించే వరకు — ప్రణాళికాబద్ధంగా, నాణ్యమైన మెటీరియల్స్‌తో పారదర్శక నిర్మాణం.
+          {% else %}
+            From plot survey to possession — planned, engineered, and built with genuine brand specifications, structural integrity, and dedicated supervision.
+          {% endif %}
+        </p>
+
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{{ url_for('public.contact') }}" class="btn btn-mcb-primary btn-lg px-4">
+            <i class="bi bi-calendar-event me-2"></i>
+            {% if lang == 'te' %}కన్సల్టేషన్ కోరండి{% else %}Request Consultation{% endif %}
+          </a>
+          <a href="{{ url_for('estimation.index') }}" class="btn btn-outline-light btn-lg px-4">
+            <i class="bi bi-calculator me-2"></i>
+            {% if lang == 'te' %}నిర్మాణ అంచనా పొందండి{% else %}Get Construction Estimate{% endif %}
+          </a>
+        </div>
+
+        <div class="mt-4 pt-3 border-top border-secondary text-secondary small">
+          <span class="text-warning fw-bold">BUILDER: {{ primary_builder }}</span> | Vishwanath Colony, Shambunipet, Warangal | Direct: <a href="tel:{{ primary_phone }}" class="text-white text-decoration-none">+91 {{ primary_phone }}</a>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white text-dark">
+          <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+            <span class="fw-bold"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Estimate Calculator</span>
+            <span class="badge bg-warning text-dark">Warangal 2026</span>
+          </div>
+          <div class="card-body p-4">
+            <form action="{{ url_for('estimation.index') }}" method="POST">
+              <div class="mb-3">
+                <label class="form-label small fw-bold">Built-up Area (Sq. Ft)</label>
+                <input type="number" name="built_up_area" class="form-control" value="2000" min="500" max="10000" required>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label small fw-bold">Floors</label>
+                  <select name="floors" class="form-select">
+                    <option value="1">Ground Floor (G)</option>
+                    <option value="2" selected>G + 1 Floor</option>
+                    <option value="3">G + 2 Floors</option>
+                    <option value="4">G + 3 Floors</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-bold">Quality Tier</label>
+                  <select name="quality_tier" class="form-select">
+                    <option value="Standard">Standard (₹1,750/sqft)</option>
+                    <option value="Premium" selected>Premium MCB (₹2,250/sqft)</option>
+                    <option value="Luxury">Luxury (₹2,850/sqft)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold">Construction Location</label>
+                <input type="text" name="location" class="form-control" value="Warangal" required>
+              </div>
+              <button type="submit" class="btn btn-mcb-primary w-100 py-2 fw-bold">
+                <i class="bi bi-cpu me-1"></i> Compute Instant AI Estimate
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Metrics Bar -->
+<section class="py-4 bg-white border-bottom shadow-sm">
+  <div class="container">
+    <div class="row g-3 text-center">
+      <div class="col-6 col-md-3">
+        <div class="p-2">
+          <div class="h3 fw-bold text-dark mb-0">15+</div>
+          <small class="text-muted">Completed Projects in Warangal</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="p-2 border-start">
+          <div class="h3 fw-bold text-warning-emphasis mb-0">UltraTech &amp; TMT</div>
+          <small class="text-muted">100% Documented Brand Materials</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="p-2 border-start">
+          <div class="h3 fw-bold text-success mb-0">IS 456:2000</div>
+          <small class="text-muted">Structural Standards &amp; Curing</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="p-2 border-start">
+          <div class="h3 fw-bold text-primary mb-0">AI-Supervised</div>
+          <small class="text-muted">Daily Site Diary &amp; Expenses</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Projects Portfolio Showcase -->
+<section class="py-5 bg-light">
+  <div class="container py-3">
+    <div class="text-center mb-5">
+      <span class="badge badge-mcb-orange px-3 py-2 text-uppercase mb-2">Our Work Portfolio</span>
+      <h2 class="mcb-section-title">
+        {% if lang == 'te' %}మా నిర్మాణాలు &amp; ఎలివేషన్ ప్రాజెక్టులు{% else %}Real Projects &amp; Modern Elevations{% endif %}
+      </h2>
+      <p class="mcb-section-subtitle">
+        {% if lang == 'te' %}
+          వరంగల్ మరియు పరిసర ప్రాంతాలలో సర్గూ సంజు ఆధ్వర్యంలో నిర్మించిన ఆధునిక నివాస గృహాలు.
+        {% else %}
+          Explore authentic residential duplexes, contemporary elevations, and delivered homes executed by builder SARGU SANJU.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="row g-4">
+      {% for proj in portfolio_projects %}
+      <div class="col-md-6 col-lg-3">
+        <div class="portfolio-card h-100 d-flex flex-column">
+          <div class="position-relative">
+            <img src="{{ proj.image }}" alt="{{ proj.title_en }}" class="w-100">
+            <span class="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75">{{ proj.badge }}</span>
+          </div>
+          <div class="p-3 d-flex flex-column flex-grow-1">
+            <h6 class="fw-bold mb-1 text-dark">
+              {% if lang == 'te' %}{{ proj.title_te }}{% else %}{{ proj.title_en }}{% endif %}
+            </h6>
+            <div class="text-muted small mb-2"><i class="bi bi-geo-alt me-1 text-danger"></i> {{ proj.location }}</div>
+            <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top small">
+              <span class="badge bg-light text-dark border">{{ proj.type }}</span>
+              <span class="text-warning-emphasis fw-bold">{{ proj.built_up }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-5">
+      <a href="{{ url_for('public.portfolio') }}" class="btn btn-outline-dark px-4 py-2 fw-semibold">
+        View All Projects Gallery &rarr;
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Authentic MCB Material Specification Sheet (Scanned Telugu Agreement Integration) -->
+<section class="py-5 bg-white">
+  <div class="container py-3">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5">
+        <span class="badge bg-danger-subtle text-danger px-3 py-2 text-uppercase mb-2">Authentic Builder Agreement</span>
+        <h3 class="fw-bold text-dark mb-3">
+          {% if lang == 'te' %}MCB నిర్మాణ సామగ్రి ఒడంబడిక పత్రం{% else %}Transparent Material Specification Agreement{% endif %}
+        </h3>
+        <p class="text-muted">
+          {% if lang == 'te' %}
+            నిర్మాణంలో ఉపయోగించే ప్రతి వస్తువు నాణ్యతను ఒప్పంద పత్రం ద్వారా స్పష్టంగా తెలియజేస్తాము. ఎటువంటి దాపరికాలు లేని నాణ్యతా ప్రమాణాలు.
+          {% else %}
+            We believe in total transparency. Every material grade, rebar diameter, and approved brand is documented upfront in our builder agreement sheet signed by <strong>SARGU SANJU</strong>.
+          {% endif %}
+        </p>
+        
+        <div class="border rounded-3 p-3 bg-light mb-3">
+          <div class="fw-bold text-dark mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Key Specification Highlights:</div>
+          <ul class="list-unstyled small text-muted mb-0">
+            <li class="mb-1"><strong>1. Pillars:</strong> 9/14 Inches RCC Columns</li>
+            <li class="mb-1"><strong>2. Steel:</strong> TMT 16mm (4 bars) + 12mm (4 bars) Fe550D</li>
+            <li class="mb-1"><strong>3. Cement:</strong> UltraTech 53 Grade / PPC Fresh Batch</li>
+            <li class="mb-1"><strong>4. Slab:</strong> 5 Inches (Miller Concrete Mix)</li>
+            <li class="mb-1"><strong>5. Sand:</strong> Godavari River Sand</li>
+            <li class="mb-1"><strong>6. Plumbing:</strong> Ashirvad &amp; Sudhakar Pipes</li>
+            <li class="mb-1"><strong>7. Electrical:</strong> Finolex Wire &amp; Goldmedal Switches</li>
+            <li class="mb-1"><strong>8. Doors &amp; Windows:</strong> Teakwood Main, PVC Bedroom, UPVC Windows</li>
+            <li class="mb-1"><strong>9. Flooring:</strong> Parking Tiles ₹70/sqft, Granite ₹100/sqft, Tiles ₹250/box</li>
+            <li><strong>10. Paint &amp; Putty:</strong> Asian Paints Apex &amp; J.K./Birla White Putty</li>
+          </ul>
+        </div>
+
+        <a href="{{ url_for('public.materials_specifications') }}" class="btn btn-mcb-primary">
+          <i class="bi bi-table me-1"></i> View Complete Materials Schedule
+        </a>
+      </div>
+
+      <div class="col-lg-7 text-center">
+        <div class="card border shadow-sm rounded-4 overflow-hidden p-2 bg-light">
+          <img src="{{ url_for('static', filename='images/mcb_material_agreement_sheet.jpg') }}" alt="MCB Telugu Agreement Sheet" class="img-fluid rounded-3 shadow-sm" style="max-height: 520px; object-fit: contain;">
+          <div class="card-footer bg-white border-0 text-muted small mt-2">
+            <i class="bi bi-file-earmark-text text-warning me-1"></i> Authentic Telugu Specification Sheet signed by Builder <strong>SARGU SANJU</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12-Stage Construction Lifecycle (From Plot to Possession) -->
+<section class="py-5 bg-light">
+  <div class="container py-3">
+    <div class="text-center mb-5">
+      <span class="badge badge-mcb-orange px-3 py-2 text-uppercase mb-2">Engineering Lifecycle</span>
+      <h2 class="mcb-section-title">
+        {% if lang == 'te' %}ఇంటి నిర్మాణం — మొదటి నుంచి చివరి వరకు (12 దశలు){% else %}Complete Construction Lifecycle (Plot to Possession){% endif %}
+      </h2>
+      <p class="mcb-section-subtitle">
+        {% if lang == 'te' %}
+          ప్రతి దశలో ఇంజినీరింగ్ పర్యవేక్షణ, నాణ్యతా పరీక్షలు మరియు కస్టమర్ అనుమతులతో నిర్మాణం జరుగుతుంది.
+        {% else %}
+          Stage-by-stage engineering execution adhering to structural codes, quality checkpoints, and daily progress logs.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="row g-4">
+      {% set stages = [
+        {"no": "01", "title_en": "Customer Brief & Requirements", "title_te": "కస్టమర్ అవసరాలు & బడ్జెట్", "desc": "Family size, rooms, vastu preferences, floors, target timeline."},
+        {"no": "02", "title_en": "Site Survey & Soil Feasibility", "title_te": "సైట్ సర్వే & మట్టి పరీక్ష", "desc": "Plot measurement, road access, levels, soil bearing capacity."},
+        {"no": "03", "title_en": "Architectural Planning & Elevations", "title_te": "ఆర్కిటెక్చర్ ప్లానింగ్ & ఎలివేషన్", "desc": "Floor plans, 3D elevation renders, ventilation and setback rules."},
+        {"no": "04", "title_en": "Structural Engineering Design", "title_te": "స్ట్రక్చరల్ ఇంజినీరింగ్ డిజైన్", "desc": "Columns, footings, 9/14 beams, 16mm/12mm rebar schedule."},
+        {"no": "05", "title_en": "BOQ, Rate Cards & Contract", "title_te": "BOQ & ఒప్పంద పత్రం", "desc": "Transparent brand specifications, milestone payment schedule."},
+        {"no": "06", "title_en": "Approvals & Site Mobilisation", "title_te": "అనుమతులు & సైట్ ఏర్పాట్లు", "desc": "Water/electricity connection, site fencing, storage godown."},
+        {"no": "07", "title_en": "Excavation & Footing Foundation", "title_te": "పునాది & కాలమ్స్ కాంక్రీట్", "desc": "Grid line marking, PCC bed, M25 concrete, anti-termite spray."},
+        {"no": "08", "title_en": "RCC Frame & Brick Masonry", "title_te": "RCC ఫ్రేమ్ & ఇటుక గోడలు", "desc": "Columns, 5-inch slab pour, light weight No.1 kiln brickwork."},
+        {"no": "09", "title_en": "MEP First-Fix (Plumbing/Current)", "title_te": "ప్లంబింగ్ & కరెంట్ పైపులు", "desc": "Ashirvad/Sudhakar lines, Finolex conduit chasing, DB box."},
+        {"no": "10", "title_en": "Plastering, Waterproofing & Screed", "title_te": "ప్లాస్టరింగ్ & వాటర్‌ప్రూఫింగ్", "desc": "Internal/external plaster, terrace ponding waterproofing test."},
+        {"no": "11", "title_en": "Finishes, Joinery & Painting", "title_te": "టైల్స్, తలుపులు & రంగులు", "desc": "Granite counters, UPVC windows, POP ceiling, Asian Paints."},
+        {"no": "12", "title_en": "Testing, Snag Closure & Handover", "title_te": "పరీక్షలు & ఇంటి తాళాలు అందించడం", "desc": "Pressure tests, electrical checks, deep cleaning, key handover."}
+      ] %}
+      
+      {% for st in stages %}
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border p-3 rounded-4 bg-white shadow-sm hover-shadow">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-2 fs-6">{{ st.no }}</span>
+            <h6 class="fw-bold mb-0 text-dark">
+              {% if lang == 'te' %}{{ st.title_te }}{% else %}{{ st.title_en }}{% endif %}
+            </h6>
+          </div>
+          <p class="text-muted small mb-0">{{ st.desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Direct Enquiry Form Section -->
+<section class="py-5 bg-white border-top">
+  <div class="container py-3">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <span class="badge badge-mcb-orange px-3 py-2 text-uppercase mb-2">Direct Builder Consultation</span>
+        <h2 class="fw-bold text-dark mb-3">
+          {% if lang == 'te' %}మీ స్థలంలో ఇంటి నిర్మాణానికి విచారణ చేయండి{% else %}Plan Your Construction with Sargu Sanju{% endif %}
+        </h2>
+        <p class="text-muted mb-4">
+          {% if lang == 'te' %}
+            మీ ప్లాట్ కొలతలు మరియు అవసరాలను తెలియజేయండి. బిల్డర్ సర్గూ సంజు నేరుగా మిమ్మల్ని సంప్రదించి సైట్ విజిట్ మరియు బడ్జెట్ అంచనాను అందిస్తారు.
+          {% else %}
+            Share your plot dimensions and house requirements. Builder SARGU SANJU will review your scope and provide preliminary design recommendations and cost guidance.
+          {% endif %}
+        </p>
+
+        <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 mb-3 border">
+          <i class="bi bi-telephone-inbound-fill fs-2 text-warning"></i>
+          <div>
+            <div class="small text-muted">Direct Phone / WhatsApp:</div>
+            <a href="tel:{{ primary_phone }}" class="fw-bold fs-5 text-dark text-decoration-none">+91 {{ primary_phone }}</a>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 border">
+          <i class="bi bi-geo-alt-fill fs-2 text-danger"></i>
+          <div>
+            <div class="small text-muted">Office Location:</div>
+            <div class="fw-semibold text-dark">{{ office_address }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card border rounded-4 shadow-sm p-4 bg-light">
+          <h5 class="fw-bold text-dark mb-3"><i class="bi bi-envelope-paper-fill text-warning me-2"></i> Submit Construction Inquiry</h5>
+          <form action="{{ url_for('public.contact') }}" method="POST">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Full Name *</label>
+                <input type="text" name="name" class="form-control" placeholder="Your name" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Phone Number *</label>
+                <input type="tel" name="phone" class="form-control" placeholder="Mobile number" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Site / Plot Location *</label>
+                <input type="text" name="location" class="form-control" placeholder="e.g. Warangal, Hanamkonda" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Plot Size / Dimensions</label>
+                <input type="text" name="plot_size" class="form-control" placeholder="e.g. 150 sq yards / 30x45">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Proposed Floors</label>
+                <select name="floors" class="form-select">
+                  <option value="Ground Only">Ground Floor (G)</option>
+                  <option value="G+1" selected>G + 1 (Duplex)</option>
+                  <option value="G+2">G + 2</option>
+                  <option value="G+3">G + 3</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Required Service</label>
+                <select name="service_type" class="form-select">
+                  <option value="Full Turnkey Construction" selected>Full Turnkey Construction</option>
+                  <option value="Civil Structure Only">Civil Structure Only</option>
+                  <option value="Elevation & Renovation">Elevation & Renovation</option>
+                  <option value="Planning & Consultation">Planning & Consultation</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold">Message / Specific Requirements</label>
+                <textarea name="message" class="form-control" rows="3" placeholder="Tell us about your dream home preferences, timeline, or queries..."></textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-mcb-primary w-100 py-2 fw-bold">
+                  <i class="bi bi-send-fill me-1"></i> Send Inquiry to Builder
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

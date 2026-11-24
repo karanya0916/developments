@@ -1,0 +1,126 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}Our Services - {{ company_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5">
+  <div class="container py-3">
+    <h1 class="display-5 fw-bold mb-2">{% if lang == 'te' %}మా నిర్మాణం &amp; ఇంజినీరింగ్ సేవలు{% else %}Construction &amp; Engineering Services{% endif %}</h1>
+    <p class="text-secondary lead mb-0">From Concept Floor Planning to Turnkey Key Handover</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border rounded-4 p-4 shadow-sm hover-shadow">
+        <div class="rounded-circle bg-warning bg-opacity-25 text-warning-emphasis d-flex align-items-center justify-content-center mb-3" style="width: 54px; height: 54px;">
+          <i class="bi bi-house-door-fill fs-3"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Complete Turnkey House Construction</h5>
+        <p class="text-muted small">
+          End-to-end residential building construction including architectural planning, soil survey, excavation, RCC frame, brick masonry, plastering, premium flooring, woodwork, plumbing, electrical, and painting.
+        </p>
+        <ul class="text-muted small ps-3">
+          <li>Custom G, G+1, G+2 Duplex Villas</li>
+          <li>Vastu-compliant spatial planning</li>
+          <li>Comprehensive warranty on plumbing &amp; roof waterproofing</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border rounded-4 p-4 shadow-sm hover-shadow">
+        <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center mb-3" style="width: 54px; height: 54px;">
+          <i class="bi bi-bricks fs-3"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Structural Civil Works &amp; Framing</h5>
+        <p class="text-muted small">
+          Execution of robust structural concrete and rebar frames for homeowners who already have architectural designs. Designed according to IS 456 standards.
+        </p>
+        <ul class="text-muted small ps-3">
+          <li>9/14 RCC Column Casting with 16mm/12mm rebar</li>
+          <li>5-inch slab machine pour with UltraTech OPC 53</li>
+          <li>Continuous 14-day water ponding curing logging</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border rounded-4 p-4 shadow-sm hover-shadow">
+        <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center mb-3" style="width: 54px; height: 54px;">
+          <i class="bi bi-buildings-fill fs-3"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Modern 3D Elevation &amp; Facade</h5>
+        <p class="text-muted small">
+          Transform your home's exterior appeal with contemporary elevation styling, wood-finish louvers, exterior textures, decorative CNC screens, and warm facade lighting.
+        </p>
+        <ul class="text-muted small ps-3">
+          <li>3D Elevation design and site execution</li>
+          <li>Weather-proof Asian Paints Apex Ultima finish</li>
+          <li>Stainless steel 304 balcony and staircase railings</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border rounded-4 p-4 shadow-sm hover-shadow">
+        <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center mb-3" style="width: 54px; height: 54px;">
+          <i class="bi bi-pencil-ruler fs-3"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Architectural &amp; Vastu Planning</h5>
+        <p class="text-muted small">
+          Comprehensive layout design balancing practical space utilization, cross-ventilation, daylighting, municipal setback compliance, and traditional Vastu principles.
+        </p>
+        <ul class="text-muted small ps-3">
+          <li>Detailed working architectural floor plans</li>
+          <li>Electrical conduit and plumbing layout drawings</li>
+          <li>Municipal approval and setback coordination</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border rounded-4 p-4 shadow-sm hover-shadow">
+        <div class="rounded-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center mb-3" style="width: 54px; height: 54px;">
+          <i class="bi bi-paint-bucket fs-3"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Premium Finishing &amp; Interiors</h5>
+        <p class="text-muted small">
+          High-end interior finishing packages coordinating Italian granite, vitrified tile flooring, teakwood carved entrance doors, PVC bedroom flush doors, UPVC sliding windows, and POP ceilings.
+        </p>
+        <ul class="text-muted small ps-3">
+          <li>Kitchen granite counters (₹100/sqft standard)</li>
+          <li>POP false ceiling with LED cove lighting</li>
+          <li>Cera sanitary ware and Ashirvad/Sudhakar plumbing</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border rounded-4 p-4 shadow-sm hover-shadow">
+        <div class="rounded-circle bg-secondary bg-opacity-10 text-dark d-flex align-items-center justify-content-center mb-3" style="width: 54px; height: 54px;">
+          <i class="bi bi-tools fs-3"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Renovation, Extensions &amp; Additions</h5>
+        <p class="text-muted small">
+          Vertical expansion (adding first/second floor onto existing ground structure), room remodeling, waterproofing re-application, and structural strengthening.
+        </p>
+        <ul class="text-muted small ps-3">
+          <li>Structural load verification of existing foundations</li>
+          <li>Terrace room and headroom construction</li>
+          <li>Modern bathroom and kitchen remodeling</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5 p-4 rounded-4 bg-light border text-center">
+    <h4 class="fw-bold text-dark mb-2">Ready to discuss your building project?</h4>
+    <p class="text-muted mb-3">Call builder SARGU SANJU directly for a free plot visit and transparent consultation.</p>
+    <a href="tel:{{ primary_phone }}" class="btn btn-mcb-primary px-4 py-2 fw-bold">
+      <i class="bi bi-telephone-fill me-1"></i> Call +91 {{ primary_phone }}
+    </a>
+  </div>
+</div>
+{% endblock %}

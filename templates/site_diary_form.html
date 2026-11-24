@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Write Site Diary - {{ company_short }}{% endblock %}
+{% block page_title %}Write Daily Site Diary &amp; Expenses{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-11">
+    <div class="card border rounded-4 shadow-sm bg-white p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+          <h4 class="fw-bold text-dark mb-1"><i class="bi bi-journal-plus text-warning me-2"></i> On-Site Construction Daily Diary Entry</h4>
+          <p class="text-muted small mb-0">Record daily site progress, material usage notes, worker attendance count, and itemize all petty cash expenses spent on site today.</p>
+        </div>
+        <a href="{{ url_for('site_diary.index') }}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1"></i> Back to Diary
+        </a>
+      </div>
+
+      <form method="POST" action="{{ url_for('site_diary.create_entry') }}" enctype="multipart/form-data">
+        <div class="row g-4 mb-4">
+          <!-- 1. General Site Telemetry -->
+          <div class="col-md-4">
+            <label class="form-label small fw-bold">Select Active Project *</label>
+            <select name="project_id" class="form-select" required>
+              <option value="">Select Project</option>
+              {% for p in projects %}
+                <option value="{{ p.id }}" {% if request.args.get('project_id') == p.id|string %}selected{% endif %}>
+                  {{ p.name }} ({{ p.code }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">Diary Entry Date *</label>
+            <input type="date" name="entry_date" class="form-control" value="{{ today }}" required>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">Shift Type</label>
+            <select name="shift_type" class="form-select">
+              <option value="Day Shift" selected>Day Shift (8 AM - 6 PM)</option>
+              <option value="Night Shift">Night Shift / Overtime Pour</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Workers Count</label>
+            <input type="number" name="workers_count" class="form-control" value="8" min="0" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">Weather Condition</label>
+            <input type="text" name="weather_condition" class="form-control" value="Clear & Sunny" placeholder="e.g. Sunny / Heavy Rain / Dry">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">Ambient Site Temperature (°C)</label>
+            <input type="number" step="0.5" name="temperature" class="form-control" value="31.0">
+          </div>
+
+          <!-- 2. Detailed Work Description -->
+          <div class="col-12">
+            <label class="form-label small fw-bold">Detailed Work Carried Out on Site *</label>
+            <textarea name="work_carried_out" class="form-control" rows="4" placeholder="Detail the construction activities completed today: e.g. Column casting for level 2, 5-inch slab shuttering, 16mm rebar tying, Finolex electrical conduit laying, water curing log..." required></textarea>
+            <div class="form-text small">Include structural elements, mix ratios (e.g., M25 concrete), rebar sizes (16mm/12mm), and curing records.</div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label small fw-bold">Site Challenges, Material Delays or Safety Issues (If any)</label>
+            <textarea name="challenges_issues" class="form-control" rows="2" placeholder="Note any delayed supply trucks, power outages, rain interruptions, or safety warnings..."></textarea>
+          </div>
+        </div>
+
+        <!-- 3. Dynamic Daily On-Site Expenses Table (Crucial Requirement) -->
+        <div class="card border rounded-4 shadow-sm bg-light p-4 mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold text-dark mb-1"><i class="bi bi-wallet2 text-success me-2"></i> Daily On-Site Petty Cash &amp; Sundry Expenses</h5>
+              <p class="text-muted small mb-0">Record all direct on-site expenditures (worker tea, small hardware, fuel, unloading coolie, auto transport).</p>
+            </div>
+            <div class="text-end">
+              <span class="text-muted small d-block">Daily Tally Total:</span>
+              <span id="pettyExpenseGrandTotal" class="h4 fw-bold text-danger">₹0.00</span>
+            </div>
+          </div>
+
+          <div class="table-responsive bg-white rounded-3 border mb-3">
+            <table class="table table-sm align-middle mb-0">
+              <thead class="table-light small text-muted text-uppercase">
+                <tr>
+                  <th style="width: 32%;">Item / Expense Description *</th>
+                  <th style="width: 20%;">Amount (₹) *</th>
+                  <th style="width: 22%;">Paid To / Vendor</th>
+                  <th style="width: 20%;">Category</th>
+                  <th style="width: 6%;" class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="pettyExpensesTableBody">
+                <tr>
+                  <td><input type="text" name="expense_item[]" class="form-control form-control-sm" placeholder="e.g. Worker tea &amp; snacks" value="Worker tea &amp; biscuits (morning &amp; evening)" required></td>
+                  <td><input type="number" step="0.5" name="expense_amount[]" class="form-control form-control-sm expense-amount-input" placeholder="0.00" value="350" required></td>
+                  <td><input type="text" name="expense_paid_to[]" class="form-control form-control-sm" placeholder="Lakshmi Tea Stall" value="Lakshmi Tea Stall"></td>
+                  <td>
+                    <select name="expense_category[]" class="form-select form-select-sm">
+                      <option value="Food & Beverage" selected>Food &amp; Refreshments</option>
+                      <option value="Hardware">Small Hardware / Tools</option>
+                      <option value="Labor Assistance">Coolie / Porters</option>
+                      <option value="Fuel">Fuel &amp; Generator</option>
+                      <option value="Transport">Local Freight / Auto</option>
+                      <option value="Safety & Medical">First Aid &amp; Safety</option>
+                      <option value="Miscellaneous">Miscellaneous</option>
+                    </select>
+                  </td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-expense-row-btn"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="text" name="expense_item[]" class="form-control form-control-sm" placeholder="e.g. Binding wire &amp; nails" value="Binding wire 5kg &amp; concrete nails" required></td>
+                  <td><input type="number" step="0.5" name="expense_amount[]" class="form-control form-control-sm expense-amount-input" placeholder="0.00" value="620" required></td>
+                  <td><input type="text" name="expense_paid_to[]" class="form-control form-control-sm" placeholder="Sri Balaji Hardware" value="Sri Balaji Hardware"></td>
+                  <td>
+                    <select name="expense_category[]" class="form-select form-select-sm">
+                      <option value="Food & Beverage">Food &amp; Refreshments</option>
+                      <option value="Hardware" selected>Small Hardware / Tools</option>
+                      <option value="Labor Assistance">Coolie / Porters</option>
+                      <option value="Fuel">Fuel &amp; Generator</option>
+                      <option value="Transport">Local Freight / Auto</option>
+                      <option value="Safety & Medical">First Aid &amp; Safety</option>
+                      <option value="Miscellaneous">Miscellaneous</option>
+                    </select>
+                  </td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-expense-row-btn"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <button type="button" id="addPettyExpenseRowBtn" class="btn btn-outline-dark btn-sm">
+              <i class="bi bi-plus-circle me-1"></i> Add Another Expense Item
+            </button>
+            <span class="small text-muted fst-italic">* All items will be audited and synced to master expenses.</span>
+          </div>
+        </div>
+
+        <!-- 4. Photo Evidence & Engineer Sign-Off -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">Attach Site Photos</label>
+            <input type="file" name="site_photos" class="form-control" multiple accept="image/*">
+            <div class="form-text small">Upload photos of columns poured, rebar checked, or plaster work today.</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">Site Engineer Digital Signature *</label>
+            <input type="text" name="engineer_signature" class="form-control" value="{{ engineer_name }} (B.Tech Civil - Site Engineer)" required>
+            <div class="form-text small">Attesting accuracy of the work and petty expenses reported.</div>
+          </div>
+        </div>
+
+        <div class="text-end pt-3 border-top">
+          <button type="submit" class="btn btn-mcb-primary btn-lg px-5 fw-bold">
+            <i class="bi bi-check2-circle me-2"></i> Save Daily Site Diary &amp; Sync Expenses
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

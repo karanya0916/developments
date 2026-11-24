@@ -1,0 +1,11 @@
+.git
+.gitignore
+.keras
+__pycache__
+**/__pycache__
+*.pyc
+.vscode
+documentation
+tests
+static/uploads
+ml_models/construction_stage_classifier.keras

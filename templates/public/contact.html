@@ -1,0 +1,137 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}Contact Builder - {{ company_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5">
+  <div class="container py-3">
+    <h1 class="display-5 fw-bold mb-2">{% if lang == 'te' %}మమ్మల్ని సంప్రదించండి{% else %}Contact Builder Sargu Sanju{% endif %}</h1>
+    <p class="text-secondary lead mb-0">Plan your plot survey, request a quote, or schedule an in-person meeting in Warangal</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-5">
+      <span class="badge badge-mcb-orange px-3 py-2 text-uppercase mb-2">Office &amp; Site Contacts</span>
+      <h3 class="fw-bold text-dark mb-4">Direct Communication with Builder</h3>
+
+      <div class="d-flex align-items-start gap-3 p-3 bg-light rounded-4 border mb-3">
+        <div class="rounded-circle bg-warning text-dark p-3 fs-4">
+          <i class="bi bi-person-fill"></i>
+        </div>
+        <div>
+          <div class="small text-muted">Primary Builder / Proprieter:</div>
+          <h5 class="fw-bold text-dark mb-0">SARGU SANJU</h5>
+          <div class="text-muted small">Mamatha Constructions &amp; Builders</div>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-start gap-3 p-3 bg-light rounded-4 border mb-3">
+        <div class="rounded-circle bg-primary text-white p-3 fs-4">
+          <i class="bi bi-telephone-fill"></i>
+        </div>
+        <div>
+          <div class="small text-muted">Direct Phone / Call:</div>
+          <a href="tel:{{ primary_phone }}" class="fw-bold fs-5 text-primary text-decoration-none">+91 {{ primary_phone }}</a>
+          <div class="text-muted small">Available Mon - Sat (8 AM - 8 PM)</div>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-start gap-3 p-3 bg-light rounded-4 border mb-3">
+        <div class="rounded-circle bg-danger text-white p-3 fs-4">
+          <i class="bi bi-geo-alt-fill"></i>
+        </div>
+        <div>
+          <div class="small text-muted">Office &amp; Site Address:</div>
+          <div class="fw-semibold text-dark">{{ office_address }}</div>
+          <div class="text-muted small mt-1">Service Area: Warangal, Hanamkonda, Kazipet and nearby towns.</div>
+        </div>
+      </div>
+
+      <!-- Scanned Sheet Reference Card -->
+      <div class="card border rounded-4 p-3 bg-white shadow-sm mt-4">
+        <div class="d-flex align-items-center gap-3">
+          <img src="{{ url_for('static', filename='images/mcb_material_agreement_sheet.jpg') }}" alt="MCB Specs" style="width: 70px; height: 70px; object-fit: cover;" class="rounded border">
+          <div>
+            <div class="fw-bold small text-dark">Have questions about the material agreement?</div>
+            <div class="text-muted small">We walk you through every specification line-by-line.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card border rounded-4 shadow-sm p-4 p-md-5 bg-white">
+        <h4 class="fw-bold text-dark mb-2">Request Project Consultation / Quote</h4>
+        <p class="text-muted small mb-4">Fill out this form and builder SARGU SANJU will review your site requirements and contact you within 24 hours.</p>
+
+        <form action="{{ url_for('public.contact') }}" method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Your Name *</label>
+              <input type="text" name="name" class="form-control" placeholder="Full name" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Phone Number *</label>
+              <input type="tel" name="phone" class="form-control" placeholder="10-digit mobile" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Email Address</label>
+              <input type="email" name="email" class="form-control" placeholder="name@example.com">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Plot Location *</label>
+              <input type="text" name="location" class="form-control" placeholder="Area in Warangal / Town" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Plot Size</label>
+              <input type="text" name="plot_size" class="form-control" placeholder="e.g. 180 sq yds">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Built-up Area (Sq.Ft)</label>
+              <input type="number" name="built_up_area" class="form-control" placeholder="e.g. 2200">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Floors</label>
+              <select name="floors" class="form-select">
+                <option value="Ground Only">Ground Floor (G)</option>
+                <option value="G+1" selected>G + 1 (Duplex)</option>
+                <option value="G+2">G + 2</option>
+                <option value="G+3">G + 3</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Budget Expectation</label>
+              <select name="budget_range" class="form-select">
+                <option value="Below ₹30 Lakhs">Below ₹30 Lakhs</option>
+                <option value="₹30 - ₹45 Lakhs" selected>₹30 - ₹45 Lakhs</option>
+                <option value="₹45 - ₹65 Lakhs">₹45 - ₹65 Lakhs</option>
+                <option value="Above ₹65 Lakhs">Above ₹65 Lakhs</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Required Service</label>
+              <select name="service_type" class="form-select">
+                <option value="Full Turnkey Construction" selected>Full Turnkey Construction</option>
+                <option value="Civil Structure Only">Civil Structure Only</option>
+                <option value="Elevation & Renovation">Elevation & Renovation</option>
+                <option value="Consultation & Planning">Consultation & Planning</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Project Details / Message</label>
+              <textarea name="message" class="form-control" rows="3" placeholder="Share any specific requirements, timeline expectations, or vastu preferences..."></textarea>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-mcb-primary w-100 py-3 fw-bold">
+                <i class="bi bi-send-check-fill me-2"></i> Submit Inquiry to Builder Sargu Sanju
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

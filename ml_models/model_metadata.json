@@ -1,0 +1,17 @@
+{
+  "stage_classes": [
+    "Foundation",
+    "RCC_Framing",
+    "Masonry",
+    "Finishing_Exterior",
+    "Site_Safety"
+  ],
+  "input_size": [
+    64,
+    64,
+    3
+  ],
+  "accuracy": 1.0,
+  "loss": 3.6487720080913277e-06,
+  "trained_date": "2026-11-24"
+}

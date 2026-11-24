@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Site Diary &amp; Daily Expenses - {{ company_short }}{% endblock %}
+{% block page_title %}Site Diary &amp; On-Site Daily Expense Logbook{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+  <div>
+    <h5 class="fw-bold text-dark mb-1"><i class="bi bi-journal-bookmark-fill text-warning me-2"></i> On-Site Construction Daily Diary</h5>
+    <p class="text-muted small mb-0">Record daily work completed, weather, challenges, and track petty cash expenses incurred directly on site.</p>
+  </div>
+
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('site_diary.create_entry') }}" class="btn btn-mcb-primary btn-sm">
+      <i class="bi bi-pencil-square me-1"></i> Write Today's Site Diary
+    </a>
+  </div>
+</div>
+
+<!-- Diary Filter Card -->
+<div class="card border rounded-4 shadow-sm bg-white p-3 mb-4">
+  <form method="GET" action="{{ url_for('site_diary.index') }}" class="row g-2 align-items-center">
+    <div class="col-md-5">
+      <select name="project_id" class="form-select form-select-sm">
+        <option value="">All Active Projects</option>
+        {% for p in projects %}
+          <option value="{{ p.id }}" {% if selected_project == p.id|string %}selected{% endif %}>{{ p.name }} ({{ p.code }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <input type="date" name="date" class="form-control form-control-sm" value="{{ selected_date }}">
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+      <button type="submit" class="btn btn-dark btn-sm flex-grow-1"><i class="bi bi-filter"></i> Filter</button>
+      <a href="{{ url_for('site_diary.index') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+    </div>
+  </form>
+</div>
+
+<!-- Diary Entries Stream -->
+<div class="row g-4">
+  {% for entry in entries %}
+  <div class="col-12">
+    <div class="site-diary-card">
+      <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 pb-2 border-bottom">
+        <div>
+          <span class="badge bg-dark me-2">{{ entry.project_code }}</span>
+          <span class="fw-bold text-dark fs-5">{{ entry.project_name }}</span>
+          <div class="text-muted small mt-1">
+            <i class="bi bi-calendar-check text-warning me-1"></i> Date: <strong>{{ entry.entry_date }}</strong> | 
+            Shift: <span class="badge bg-light text-dark border">{{ entry.shift_type }}</span> | 
+            Weather: <span class="text-dark">{{ entry.weather_condition }} ({{ entry.temperature }}°C)</span>
+          </div>
+        </div>
+
+        <div class="text-end">
+          <span class="text-muted small d-block">Daily On-Site Expense:</span>
+          <span class="fs-4 fw-bold text-danger">₹{{ "{:,.2f}".format(entry.daily_expense_total) }}</span>
+          <div>
+            <a href="{{ url_for('site_diary.view_entry', entry_id=entry.id) }}" class="btn btn-sm btn-outline-dark mt-1">
+              <i class="bi bi-printer me-1"></i> View / Print Official Slip
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-lg-7">
+          <h6 class="fw-bold text-dark mb-1"><i class="bi bi-hammer text-secondary me-1"></i> Work Carried Out on Site:</h6>
+          <p class="text-dark small leading-relaxed bg-light p-3 rounded-3 border mb-2">{{ entry.work_carried_out }}</p>
+
+          {% if entry.challenges_issues %}
+          <div class="alert alert-warning py-2 px-3 small rounded-3 mb-2">
+            <strong><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> Site Challenge / Blocker:</strong> {{ entry.challenges_issues }}
+          </div>
+          {% endif %}
+
+          <div class="d-flex align-items-center gap-3 small text-muted">
+            <span>Workers Deployed: <strong class="text-dark">{{ entry.workers_count }}</strong></span>
+            <span>•</span>
+            <span>Site Engineer: <strong class="text-dark">{{ entry.engineer_signature or entry.author_name or 'Site Engineer' }}</strong></span>
+          </div>
+        </div>
+
+        <div class="col-lg-5">
+          <h6 class="fw-bold text-dark mb-1"><i class="bi bi-receipt text-success me-1"></i> On-Site Petty Cash Expenses Breakdown:</h6>
+          <div class="table-responsive border rounded-3 bg-white">
+            <table class="table table-sm table-petty-expense mb-0">
+              <thead>
+                <tr>
+                  <th class="ps-3">Item / Description</th>
+                  <th>Category</th>
+                  <th class="text-end pe-3">Amount (₹)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for itm in entry.petty_expenses %}
+                <tr>
+                  <td class="ps-3 small fw-semibold text-dark">{{ itm.item }}</td>
+                  <td class="small text-muted">{{ itm.category }}</td>
+                  <td class="text-end pe-3 small fw-bold text-dark">₹{{ "{:,.2f}".format(itm.amount) }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3" class="text-center p-2 text-muted small">No petty cash line items recorded.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attached Photos Preview -->
+      {% if entry.photos %}
+      <div class="border-top pt-2">
+        <span class="small text-muted fw-bold d-block mb-2">Site Photos Attached:</span>
+        <div class="d-flex gap-2 flex-wrap">
+          {% for p in entry.photos %}
+          <img src="{{ p }}" alt="Site Photo" style="width: 80px; height: 60px; object-fit: cover;" class="rounded border">
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12 text-center p-5 card border rounded-4 bg-white text-muted">
+    <i class="bi bi-journal-x fs-1 text-warning mb-2"></i>
+    <h5>No site diary entries found.</h5>
+    <p class="small mb-3">Begin writing daily progress and site expenses using the diary tool.</p>
+    <a href="{{ url_for('site_diary.create_entry') }}" class="btn btn-mcb-primary btn-sm mx-auto">Create First Diary Entry</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

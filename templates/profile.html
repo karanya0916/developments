@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - {{ company_short }}{% endblock %}
+{% block page_title %}User Account &amp; RBAC Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border rounded-4 shadow-sm bg-white p-4 p-md-5">
+      <div class="d-flex align-items-center gap-4 mb-4 pb-4 border-bottom">
+        <div class="rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center display-6" style="width: 80px; height: 80px;">
+          {{ user.full_name[0] if user.full_name else 'U' }}
+        </div>
+        <div>
+          <h4 class="fw-bold text-dark mb-1">{{ user.full_name }}</h4>
+          <span class="badge bg-primary fs-6">{{ user.role }}</span>
+          <div class="text-muted small mt-1">Username: <strong>{{ user.username }}</strong> | Member since: {{ user.created_at[:10] }}</div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-muted">Email Address</label>
+          <div class="fw-semibold text-dark">{{ user.email }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-muted">Phone Number</label>
+          <div class="fw-semibold text-dark">{{ user.phone or 'Not configured' }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-muted">Role Permissions</label>
+          <div class="small text-muted">
+            {% if user.role == 'Administrator' %}
+              Full system control, executive analytics, user management, and project approvals.
+            {% elif user.role == 'Project Manager' %}
+              Schedule planning, task assignment, budget monitoring, and milestone reports.
+            {% elif user.role == 'Site Engineer' %}
+              Site diary logging, on-site petty cash logging, photo uploads, and worker attendance.
+            {% else %}
+              Inventory replenishment, warehouse dispatch, and material threshold audits.
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-muted">Headquarters</label>
+          <div class="small text-muted">Mamatha Constructions &amp; Builders, Warangal, Telangana</div>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-4 border-top text-end">
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-dark btn-sm">
+          Return to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

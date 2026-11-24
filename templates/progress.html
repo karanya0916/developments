@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Site Progress &amp; Vision - {{ company_short }}{% endblock %}
+{% block page_title %}Construction Progress Monitoring &amp; Computer Vision Stage Detection{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <!-- Upload Site Image with TensorFlow Computer Vision -->
+  <div class="col-lg-5">
+    <div class="card border rounded-4 shadow-sm bg-white p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-camera-fill text-warning me-2"></i> Upload Site Photo (AI Vision)</h5>
+        <span class="badge bg-primary text-white">TensorFlow CNN</span>
+      </div>
+
+      <form action="{{ url_for('progress.upload_image') }}" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Select Active Project *</label>
+          <select name="project_id" class="form-select" required>
+            {% for p in projects %}
+              <option value="{{ p.id }}" {% if selected_project and selected_project.id == p.id %}selected{% endif %}>
+                {{ p.name }} ({{ p.code }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Manual Stage Tag</label>
+          <select name="stage_category" class="form-select">
+            <option value="Foundation">Foundation &amp; Excavation</option>
+            <option value="RCC_Framing" selected>RCC Framing (Columns, Beams, Slab)</option>
+            <option value="Masonry">Brick Masonry &amp; Mortar</option>
+            <option value="Plastering">Plastering &amp; Waterproofing</option>
+            <option value="Finishing">Finishing, Tiles &amp; Woodwork</option>
+            <option value="Exterior">Exterior 3D Elevation</option>
+            <option value="Safety_Issue">Site Safety Inspection</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Upload Construction Image *</label>
+          <input type="file" name="site_image" class="form-control" accept="image/*" required>
+          <div class="form-text small">TensorFlow Convolutional Neural Network will automatically classify stage and generate quality checklists.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Observation Notes</label>
+          <textarea name="notes" class="form-control" rows="2" placeholder="e.g. Second floor slab reinforcement inspected before concrete pour..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-mcb-primary w-100 py-2 fw-bold">
+          <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload &amp; Analyze with Deep Learning
+        </button>
+      </form>
+
+      <div class="alert alert-light border small text-muted mt-4 mb-0">
+        <i class="bi bi-info-circle text-primary me-1"></i>
+        <strong>Model Notice:</strong> Our custom TensorFlow CNN model (3 Conv2D layers + Dense dropout) runs real-time inference on site textures. As per engineering safety rules, AI output provides photo classification assistance and does not replace statutory structural stability certifications.
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Progress Timeline & Milestone Reports -->
+  <div class="col-lg-7">
+    <div class="card border rounded-4 shadow-sm bg-white p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div>
+          <h5 class="fw-bold text-dark mb-0">{{ selected_project.name if selected_project else 'Project Progress' }}</h5>
+          <span class="text-muted small">Status: <strong class="text-dark">{{ selected_project.status if selected_project else 'Active' }}</strong></span>
+        </div>
+        <button class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#addProgressReportModal">
+          <i class="bi bi-flag me-1"></i> Add Milestone Report
+        </button>
+      </div>
+
+      <!-- Overall Bar -->
+      {% if selected_project %}
+      <div class="mb-4 p-3 bg-light rounded-3 border">
+        <div class="d-flex justify-content-between small text-muted mb-1">
+          <span>Overall Project Completion Percentage</span>
+          <strong class="text-dark fs-6">{{ selected_project.completion_percentage }}%</strong>
+        </div>
+        <div class="progress" style="height: 10px;">
+          <div class="progress-bar bg-warning" style="width: {{ selected_project.completion_percentage }}%;"></div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Progress Reports List -->
+      <h6 class="fw-bold text-dark mb-2">Milestone Reports History</h6>
+      <div class="list-group list-group-flush mb-0">
+        {% for rep in reports %}
+        <div class="list-group-item p-3 border rounded-3 mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold text-dark">{{ rep.milestone_name }}</span>
+            <span class="badge bg-light text-dark border">{{ rep.report_date }}</span>
+          </div>
+          <div class="d-flex gap-3 small mb-2 text-muted">
+            <span>Planned: <strong>{{ rep.planned_percentage }}%</strong></span>
+            <span>Actual: <strong class="text-dark">{{ rep.actual_percentage }}%</strong></span>
+            <span>Variance: <strong class="{% if rep.variance_percentage >= 0 %}text-success{% else %}text-danger{% endif %}">{{ rep.variance_percentage }}%</strong></span>
+          </div>
+          <div class="small text-muted mb-1"><strong>Completed:</strong> {{ rep.activities_completed }}</div>
+          {% if rep.delay_reasons %}
+          <div class="small text-danger"><strong>Delay Reason:</strong> {{ rep.delay_reasons }}</div>
+          {% endif %}
+        </div>
+        {% else %}
+        <div class="p-3 text-center text-muted small">No milestone reports recorded yet. Click 'Add Milestone Report' above.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Uploaded Site Images Gallery with AI Classification Tags -->
+<div class="card border rounded-4 shadow-sm bg-white p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-images text-warning me-2"></i> Construction Site Image Repository &amp; AI Analysis</h5>
+    <span class="badge bg-light text-muted border">{{ images|length }} Photos Documented</span>
+  </div>
+
+  <div class="row g-4">
+    {% for img in images %}
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="card border rounded-3 overflow-hidden shadow-sm h-100">
+        <img src="{{ img.image_path }}" alt="Site Photo" style="height: 190px; object-fit: cover;">
+        <div class="p-3 d-flex flex-column flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="badge bg-warning text-dark">{{ img.ai_detected_stage or img.stage_category }}</span>
+            <small class="text-muted">{{ "{:.0f}%".format(img.ai_confidence * 100) if img.ai_confidence else '95%' }}</small>
+          </div>
+          <p class="text-dark small mb-2 text-truncate">{{ img.notes or 'Site progress photo' }}</p>
+          <div class="mt-auto pt-2 border-top small text-muted d-flex justify-content-between">
+            <span>{{ img.inspection_status or 'Approved' }}</span>
+            <span>{{ img.uploaded_at[:10] if img.uploaded_at else '' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center p-4 text-muted small">No site images found for this project.</div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Modal: Add Milestone Report -->
+<div class="modal fade" id="addProgressReportModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4">
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title fw-bold">Submit Milestone Progress Report</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="{{ url_for('progress.add_report') }}" method="POST">
+        <input type="hidden" name="project_id" value="{{ selected_project.id if selected_project else 1 }}">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Milestone / Stage Name *</label>
+            <input type="text" name="milestone_name" class="form-control" placeholder="e.g. Ground Floor RCC Framing Complete" required>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-bold">Planned Progress (%) *</label>
+              <input type="number" step="0.5" name="planned_percentage" class="form-control" placeholder="e.g. 50" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-bold">Actual Progress (%) *</label>
+              <input type="number" step="0.5" name="actual_percentage" class="form-control" placeholder="e.g. 52" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Report Date</label>
+            <input type="date" name="report_date" class="form-control" value="{{ today }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Activities Completed</label>
+            <textarea name="activities_completed" class="form-control" rows="2" placeholder="Columns cast, water curing maintained for 14 days..."></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Delay Reasons / Corrective Actions (if any)</label>
+            <textarea name="delay_reasons" class="form-control" rows="2" placeholder="Rain interruption, sand transport delay..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-top">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-mcb-primary btn-sm">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

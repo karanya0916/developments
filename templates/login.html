@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - {{ company_short }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      max-width: 440px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card p-4 p-md-5">
+  <div class="text-center mb-4">
+    <img src="{{ url_for('static', filename='images/mcb_logo.svg') }}" alt="MCB Logo" height="52" class="mb-3">
+    <h4 class="fw-bold text-dark">Portal Sign In</h4>
+    <p class="text-muted small">Smart Construction Management System</p>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show small" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+    <div class="mb-3">
+      <label class="form-label small fw-bold text-dark">Username or Email</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+        <input type="text" name="username" class="form-control" placeholder="admin or pm_vikram" value="admin" required autofocus>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label small fw-bold text-dark">Password</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+        <input type="password" name="password" class="form-control" placeholder="••••••••" value="admin123" required>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 small">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+        <label class="form-check-label text-muted" for="rememberMe">Remember me</label>
+      </div>
+      <a href="{{ url_for('public.index') }}" class="text-warning-emphasis fw-semibold text-decoration-none">Back to Website</a>
+    </div>
+
+    <button type="submit" class="btn btn-mcb-primary w-100 py-2 fw-bold mb-3">
+      <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to System
+    </button>
+  </form>
+
+  <div class="p-3 bg-light rounded-3 small border mb-3">
+    <div class="fw-bold text-dark mb-1"><i class="bi bi-key-fill text-warning me-1"></i> Default Demo Credentials:</div>
+    <div class="d-flex justify-content-between text-muted">
+      <span>Admin (Sargu Sanju):</span>
+      <code>admin / admin123</code>
+    </div>
+    <div class="d-flex justify-content-between text-muted">
+      <span>Project Manager:</span>
+      <code>pm_vikram / pm123</code>
+    </div>
+    <div class="d-flex justify-content-between text-muted">
+      <span>Site Engineer:</span>
+      <code>eng_rajesh / eng123</code>
+    </div>
+    <div class="d-flex justify-content-between text-muted">
+      <span>Inventory Manager:</span>
+      <code>inv_suresh / inv123</code>
+    </div>
+  </div>
+
+  <div class="text-center small text-muted">
+    Need a new account? <a href="{{ url_for('auth.register') }}" class="text-warning-emphasis fw-semibold">Register here</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

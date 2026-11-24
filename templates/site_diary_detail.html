@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Site Diary #{{ entry.id }} - {{ company_short }}{% endblock %}
+{% block page_title %}Official Daily Site Diary Record{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="card border rounded-4 shadow-sm bg-white p-5 print-container" id="printableDiaryArea">
+      <!-- MCB Letterhead Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-4 border-bottom">
+        <div>
+          <img src="{{ url_for('static', filename='images/mcb_logo.svg') }}" alt="MCB Logo" height="54" class="mb-2">
+          <div class="text-muted small"><strong>MAMATHA CONSTRUCTIONS &amp; BUILDERS</strong></div>
+          <div class="text-muted small">{{ office_address }}</div>
+          <div class="text-muted small">Primary Builder: <strong>{{ primary_builder }}</strong> | Phone: +91 {{ primary_phone }}</div>
+        </div>
+        <div class="text-end">
+          <div class="badge bg-warning text-dark px-3 py-2 text-uppercase fw-bold fs-6 mb-2">DAILY SITE LOG</div>
+          <div class="fw-bold text-dark">Log Ref: MCB-SD-{{ entry.id }}</div>
+          <div class="text-muted small">Date: <strong>{{ entry.entry_date }}</strong> ({{ entry.shift_type }})</div>
+        </div>
+      </div>
+
+      <!-- Project & Site Conditions -->
+      <div class="row g-3 p-3 bg-light rounded-3 border mb-4 small">
+        <div class="col-md-6">
+          <span class="text-muted d-block">Project Name &amp; Code:</span>
+          <strong class="text-dark fs-6">{{ entry.project_name }} ({{ entry.project_code }})</strong>
+          <div class="text-muted">{{ entry.project_location }}</div>
+        </div>
+        <div class="col-md-3">
+          <span class="text-muted d-block">Weather &amp; Temperature:</span>
+          <strong class="text-dark">{{ entry.weather_condition }}</strong> ({{ entry.temperature }}°C)
+        </div>
+        <div class="col-md-3">
+          <span class="text-muted d-block">Workforce on Site:</span>
+          <strong class="text-dark">{{ entry.workers_count }} Workers</strong>
+        </div>
+      </div>
+
+      <!-- Work Completed -->
+      <div class="mb-4">
+        <h6 class="fw-bold text-dark text-uppercase small"><i class="bi bi-hammer text-warning me-2"></i> Construction Activities Executed:</h6>
+        <div class="p-3 bg-white rounded-3 border text-dark leading-relaxed">
+          {{ entry.work_carried_out }}
+        </div>
+      </div>
+
+      {% if entry.challenges_issues %}
+      <div class="mb-4">
+        <h6 class="fw-bold text-danger text-uppercase small"><i class="bi bi-exclamation-triangle-fill me-2"></i> Challenges / Delays Encountered:</h6>
+        <div class="alert alert-warning p-3 rounded-3 small mb-0">
+          {{ entry.challenges_issues }}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Itemized Daily Petty Cash Expenses -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark text-uppercase small mb-0"><i class="bi bi-receipt text-success me-2"></i> Itemized On-Site Expenses:</h6>
+          <span class="fw-bold text-danger">Total: ₹{{ "{:,.2f}".format(entry.daily_expense_total) }}</span>
+        </div>
+
+        <div class="table-responsive border rounded-3">
+          <table class="table table-sm table-striped mb-0 align-middle">
+            <thead class="table-light small text-muted">
+              <tr>
+                <th class="ps-3">No.</th>
+                <th>Item / Description</th>
+                <th>Category</th>
+                <th>Paid To / Vendor</th>
+                <th class="text-end pe-3">Amount (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for itm in entry.petty_expenses %}
+              <tr>
+                <td class="ps-3 small">{{ loop.index }}</td>
+                <td class="small fw-semibold text-dark">{{ itm.item }}</td>
+                <td class="small"><span class="badge bg-light text-dark border">{{ itm.category }}</span></td>
+                <td class="small text-muted">{{ itm.paid_to or 'Direct' }}</td>
+                <td class="text-end pe-3 small fw-bold text-dark">₹{{ "{:,.2f}".format(itm.amount) }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5" class="text-center p-3 text-muted small">No sundry petty cash logged for this entry.</td></tr>
+              {% endfor %}
+            </tbody>
+            <tfoot class="table-light">
+              <tr>
+                <th colspan="4" class="text-end ps-3 fw-bold">Daily Total Incurred:</th>
+                <th class="text-end pe-3 fw-bold text-danger">₹{{ "{:,.2f}".format(entry.daily_expense_total) }}</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Site Photos -->
+      {% if entry.photos %}
+      <div class="mb-4">
+        <h6 class="fw-bold text-dark text-uppercase small mb-2"><i class="bi bi-camera text-primary me-2"></i> Photographic Evidence:</h6>
+        <div class="d-flex gap-3 flex-wrap">
+          {% for p in entry.photos %}
+          <img src="{{ p }}" alt="Site Photo" style="max-height: 140px; border-radius: 8px;" class="border shadow-sm">
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Signatures Footer -->
+      <div class="row pt-5 mt-4 border-top">
+        <div class="col-6">
+          <div class="small text-muted">Prepared &amp; Attested By:</div>
+          <div class="fw-bold text-dark mt-3 pt-2 border-top border-dark d-inline-block" style="min-width: 220px;">
+            {{ entry.engineer_signature or 'Site Engineer' }}
+          </div>
+          <div class="small text-muted">B.Tech Civil - Site Engineer</div>
+        </div>
+
+        <div class="col-6 text-end">
+          <div class="small text-muted">Verified &amp; Approved By:</div>
+          <div class="fw-bold text-dark mt-3 pt-2 border-top border-dark d-inline-block text-center" style="min-width: 220px;">
+            {{ primary_builder }}
+          </div>
+          <div class="small text-muted">Proprietor &amp; Chief Builder</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{{ url_for('site_diary.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to All Diary Entries
+      </a>
+      <button onclick="window.print()" class="btn btn-dark">
+        <i class="bi bi-printer-fill me-1"></i> Print / Save as PDF
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}

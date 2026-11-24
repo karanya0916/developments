@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Telemetry - {{ company_short }}{% endblock %}
+{% block page_title %}Real-Time Weather Telemetry &amp; Civil Engineering Advisories{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-lg-8">
+    <div class="card border rounded-4 shadow-sm bg-white p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+          <span class="badge bg-warning text-dark mb-1">Live Civil Telemetry</span>
+          <h4 class="fw-bold text-dark mb-0">{{ weather.location }}</h4>
+          <small class="text-muted">Source: {{ weather.source }} | Synced: {{ weather.updated_at }}</small>
+        </div>
+        <div class="text-end">
+          <div class="display-5 fw-bold text-dark mb-0">{{ weather.temperature }}°C</div>
+          <span class="badge bg-light text-dark border">{{ weather.condition }}</span>
+        </div>
+      </div>
+
+      <div class="row g-3 text-center mb-4">
+        <div class="col-sm-3 col-6">
+          <div class="p-3 border rounded-3 bg-light">
+            <i class="bi bi-droplet-half text-primary fs-3"></i>
+            <span class="text-muted small d-block mt-1">Humidity</span>
+            <strong class="text-dark fs-5">{{ weather.humidity }}%</strong>
+          </div>
+        </div>
+        <div class="col-sm-3 col-6">
+          <div class="p-3 border rounded-3 bg-light">
+            <i class="bi bi-cloud-rain-heavy-fill text-info fs-3"></i>
+            <span class="text-muted small d-block mt-1">Rain Probability</span>
+            <strong class="text-dark fs-5">{{ weather.rain_chance }}%</strong>
+          </div>
+        </div>
+        <div class="col-sm-3 col-6">
+          <div class="p-3 border rounded-3 bg-light">
+            <i class="bi bi-wind text-secondary fs-3"></i>
+            <span class="text-muted small d-block mt-1">Wind Velocity</span>
+            <strong class="text-dark fs-5">{{ weather.wind_speed }} km/h</strong>
+          </div>
+        </div>
+        <div class="col-sm-3 col-6">
+          <div class="p-3 border rounded-3 bg-light">
+            <i class="bi bi-water text-success fs-3"></i>
+            <span class="text-muted small d-block mt-1">Curing Need</span>
+            <strong class="text-dark fs-5">{{ weather.advisory.curing_requirement }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actionable Site Recommendations -->
+      <h6 class="fw-bold text-dark mb-2"><i class="bi bi-shield-check text-warning me-1"></i> Site Engineering Feasibility Checks (IS 456 Standards):</h6>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3 border {% if weather.advisory.is_safe_for_slab_pour %}bg-success-subtle border-success-subtle text-success-emphasis{% else %}bg-danger-subtle border-danger-subtle text-danger-emphasis{% endif %}">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="bi {% if weather.advisory.is_safe_for_slab_pour %}bi-check-circle-fill text-success{% else %}bi-x-circle-fill text-danger{% endif %} fs-4"></i>
+              <strong class="fs-6">RCC Roof Slab Machine Pour:</strong>
+            </div>
+            <div class="small">
+              {% if weather.advisory.is_safe_for_slab_pour %}
+                Safe to execute slab casting. Wind velocity and rain probability are within acceptable tolerance limits.
+              {% else %}
+                Precaution advised! Rain probability exceeds 40%. Postpone open slab pour or arrange waterproof tarpaulins.
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="p-3 rounded-3 border {% if weather.advisory.is_safe_for_exterior_paint %}bg-success-subtle border-success-subtle text-success-emphasis{% else %}bg-warning-subtle border-warning-subtle text-warning-emphasis{% endif %}">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="bi {% if weather.advisory.is_safe_for_exterior_paint %}bi-check-circle-fill text-success{% else %}bi-exclamation-triangle-fill text-warning{% endif %} fs-4"></i>
+              <strong class="fs-6">Exterior Painting &amp; Plaster:</strong>
+            </div>
+            <div class="small">
+              {% if weather.advisory.is_safe_for_exterior_paint %}
+                Ideal conditions for applying Birla Wall Putty and Asian Paints Apex Ultima coats.
+              {% else %}
+                High ambient humidity or heat. Allow minimum 12 hours curing between primer and top coats.
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card border rounded-4 shadow-sm bg-white p-4 h-100">
+      <h5 class="fw-bold text-dark mb-3"><i class="bi bi-card-checklist text-primary me-2"></i> Safety Protocols</h5>
+      <div class="mb-3">
+        <div class="fw-bold small text-dark mb-1">High Wind &amp; Scaffolding Safety:</div>
+        <p class="small text-muted mb-0">Inspect bamboo and steel scaffolding clamp tightness when wind exceeds 25 km/h. Anchor safety harnesses on all exterior facades.</p>
+      </div>
+      <div class="mb-3">
+        <div class="fw-bold small text-dark mb-1">Concrete Heat Hydration:</div>
+        <p class="small text-muted mb-0">When temperature rises above 35°C, apply continuous ponding or wet hessian cloth to prevent plastic shrinkage cracking in fresh slabs.</p>
+      </div>
+      <div>
+        <div class="fw-bold small text-dark mb-1">Excavation Waterlogging:</div>
+        <p class="small text-muted mb-0">Ensure site drainage trenches are cleared before monsoon showers to safeguard foundation footings.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

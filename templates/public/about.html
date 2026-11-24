@@ -1,0 +1,72 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}About Us - {{ company_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5">
+  <div class="container py-3">
+    <h1 class="display-5 fw-bold mb-2">{% if lang == 'te' %}మా గురించి - సంస్థ పరిచయం{% else %}About MCB Constructions{% endif %}</h1>
+    <p class="text-secondary lead mb-0">{% if lang == 'te' %}నమ్మకం, నాణ్యత, శ్రద్ధతో మీ కలల ఇంటి నిర్మాణం{% else %}Building Your Dreams with Trust, Quality and Care{% endif %}</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5 align-items-center">
+    <div class="col-lg-6">
+      <span class="badge badge-mcb-orange px-3 py-2 text-uppercase mb-2">Leadership & Experience</span>
+      <h2 class="fw-bold text-dark mb-3">Primary Builder: <span class="text-warning-emphasis">SARGU SANJU</span></h2>
+      <p class="text-muted leading-relaxed">
+        <strong>MAMATHA CONSTRUCTIONS & BUILDERS (MCB)</strong> was established in Warangal with a clear customer-first mission: to transform the often chaotic residential building journey into a structured, transparent, and joyful experience.
+      </p>
+      <p class="text-muted">
+        Headquartered at Vishwanath Colony, Shambunipet, Warangal, builder Sargu Sanju brings deep practical civil construction know-how, meticulous attention to material brands, and structural adherence to Indian Standard IS 456. From structural frame calculation to the finishing luster of teakwood woodwork, every project is treated with personal dedication.
+      </p>
+      
+      <div class="row g-3 mt-2">
+        <div class="col-sm-6">
+          <div class="border rounded-3 p-3 bg-light">
+            <h6 class="fw-bold text-dark mb-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i> Office Address</h6>
+            <div class="small text-muted">{{ office_address }}</div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="border rounded-3 p-3 bg-light">
+            <h6 class="fw-bold text-dark mb-1"><i class="bi bi-telephone-fill text-success me-1"></i> Direct Contact</h6>
+            <div class="small text-muted">+91 {{ primary_phone }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card border rounded-4 overflow-hidden shadow-sm">
+        <img src="{{ url_for('static', filename='images/portfolio_project_1.png') }}" alt="MCB Completed Project" class="img-fluid">
+        <div class="card-body p-4 bg-white">
+          <h5 class="fw-bold text-dark mb-2">Our Core Principles</h5>
+          <div class="d-flex align-items-start gap-3 mb-2">
+            <i class="bi bi-patch-check-fill text-warning fs-5"></i>
+            <div>
+              <strong class="text-dark">Documented Brand Specifications:</strong>
+              <div class="small text-muted">Never substituting specified materials. UltraTech cement, 16mm/12mm steel, and Finolex wires guaranteed.</div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start gap-3 mb-2">
+            <i class="bi bi-patch-check-fill text-warning fs-5"></i>
+            <div>
+              <strong class="text-dark">On-Site Daily Diary Logging:</strong>
+              <div class="small text-muted">Every day's activities, petty expenses, and workforce records logged transparently.</div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start gap-3">
+            <i class="bi bi-patch-check-fill text-warning fs-5"></i>
+            <div>
+              <strong class="text-dark">Rigorous Curing & Structural Safety:</strong>
+              <div class="small text-muted">14-day mandatory water ponding curing for all slabs and column structures.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

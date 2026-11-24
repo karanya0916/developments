@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}AI Construction Assistant - {{ company_short }}{% endblock %}
+{% block page_title %}AI Construction Assistant Chatbot (Bilingual: EN / TE){% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card border rounded-4 shadow-sm bg-white p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div>
+          <h5 class="fw-bold text-dark mb-1"><i class="bi bi-robot text-warning me-2"></i> MCB Intelligent Engineering Assistant</h5>
+          <p class="text-muted small mb-0">Ask questions regarding construction materials, IS 456 standards, cost per square foot, or builder Sargu Sanju's policies.</p>
+        </div>
+        <span class="badge bg-warning text-dark"><i class="bi bi-translate me-1"></i> Supports English &amp; Telugu</span>
+      </div>
+
+      <!-- Quick Prompt Suggestion Pills -->
+      <div class="mb-3 d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary quick-prompt-btn" onclick="sendQuickPrompt('What brand of cement and steel does MCB use?')">
+          Cement &amp; Steel Brands?
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary quick-prompt-btn" onclick="sendQuickPrompt('What is the construction cost per sqft in Warangal?')">
+          Cost per Sq.Ft?
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary quick-prompt-btn" onclick="sendQuickPrompt('సిమెంట్ మరియు స్టీల్ వివరాలు ఏమిటి?')">
+          సిమెంట్ &amp; స్టీల్ వివరాలు (Telugu)
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary quick-prompt-btn" onclick="sendQuickPrompt('How many days should an RCC slab be cured?')">
+          Slab Curing Period?
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary quick-prompt-btn" onclick="sendQuickPrompt('Who is builder Sargu Sanju and what is the office address?')">
+          Builder Contact &amp; Address?
+        </button>
+      </div>
+
+      <!-- Chatbox Container -->
+      <div id="chatBox" class="chat-container mb-3">
+        <!-- Initial Welcome Message -->
+        <div class="chat-bubble-ai">
+          <div class="d-flex align-items-center mb-1 text-primary small fw-bold">
+            <i class="bi bi-robot me-1"></i> MCB Smart Assistant
+            <span class="ms-auto text-muted fw-normal">Now</span>
+          </div>
+          <div>
+            Hello! I am the <strong>MCB Smart AI Construction Assistant</strong> for Mamatha Constructions &amp; Builders.<br>
+            I can answer your questions regarding:
+            <ul class="mb-2 mt-1 ps-3 small">
+              <li><strong>Approved Material Brands:</strong> UltraTech Cement, 16mm/12mm TMT steel, Godavari river sand, Ashirvad/Sudhakar plumbing, Finolex wires.</li>
+              <li><strong>Cost Estimates:</strong> Average rates per square foot in Warangal for standard, premium, and luxury finishes.</li>
+              <li><strong>Engineering Standards:</strong> RCC column sizing (9/14), 5-inch slab casting, and mandatory 14-day water ponding curing.</li>
+              <li><strong>Builder Profile:</strong> Direct contact with builder <strong>SARGU SANJU</strong> (+91 7386181866).</li>
+            </ul>
+            <em>Feel free to type in English or తెలుగు! How may I assist you today?</em>
+          </div>
+        </div>
+
+        {% for m in messages %}
+          {% if m.role == 'user' %}
+            <div class="chat-bubble-user">
+              <strong>You:</strong><br>{{ m.message }}
+            </div>
+          {% elif m.role == 'assistant' %}
+            <div class="chat-bubble-ai">
+              <div class="d-flex align-items-center mb-1 text-primary small fw-bold">
+                <i class="bi bi-robot me-1"></i> MCB Smart Assistant
+                <span class="ms-auto text-muted fw-normal">{{ m.timestamp[11:16] if m.timestamp else '' }}</span>
+              </div>
+              <div>{{ m.message | safe }}</div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Chat Input Form -->
+      <form id="chatForm" class="d-flex gap-2">
+        <input type="text" id="chatMessageInput" class="form-control" placeholder="Ask a construction question in English or తెలుగు..." autocomplete="off" required>
+        <button type="submit" class="btn btn-mcb-primary px-4 fw-bold">
+          <i class="bi bi-send-fill me-1"></i> Send
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function sendQuickPrompt(text) {
+    const input = document.getElementById('chatMessageInput');
+    const form = document.getElementById('chatForm');
+    if (input && form) {
+      input.value = text;
+      form.dispatchEvent(new Event('submit'));
+    }
+  }
+</script>
+{% endblock %}

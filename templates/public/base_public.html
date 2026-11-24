@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="{{ lang or 'en' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ company_name }}{% endblock %} - Warangal</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .public-navbar {
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .public-nav-link {
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0 8px;
+      font-size: 0.95rem;
+    }
+    .public-nav-link:hover, .public-nav-link.active {
+      color: #ea580c !important;
+    }
+    .top-bar-contact {
+      background-color: #0f172a;
+      color: #cbd5e1;
+      font-size: 0.85rem;
+      padding: 8px 0;
+    }
+    .floating-cta {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .floating-btn-call {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #ea580c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 15px rgba(234,88,12,0.4);
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .floating-btn-call:hover {
+      transform: scale(1.1);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar Contact & Language Switcher -->
+  <div class="top-bar-contact">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <span><i class="bi bi-geo-alt-fill text-warning me-1"></i> {{ office_address }}</span>
+        <span class="d-none d-md-inline">|</span>
+        <span class="d-none d-md-inline"><i class="bi bi-person-badge-fill text-warning me-1"></i> Builder: <strong>{{ primary_builder }}</strong></span>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="tel:{{ primary_phone }}" class="text-white text-decoration-none fw-bold">
+          <i class="bi bi-telephone-fill text-warning me-1"></i> +91 {{ primary_phone }}
+        </a>
+        <div class="btn-group btn-group-sm" role="group">
+          <a href="?lang=en" class="btn btn-outline-light btn-sm py-0 {% if lang != 'te' %}active fw-bold{% endif %}">EN</a>
+          <a href="?lang=te" class="btn btn-outline-light btn-sm py-0 {% if lang == 'te' %}active fw-bold{% endif %}">తెలుగు</a>
+        </div>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-sm btn-outline-warning py-0 text-white">
+          <i class="bi bi-lock-fill me-1"></i> Portal Login
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <nav class="navbar navbar-expand-lg public-navbar sticky-top py-2">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('public.index') }}">
+        <img src="{{ url_for('static', filename='images/mcb_logo.svg') }}" alt="MCB Constructions Logo" height="48">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="publicNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link public-nav-link" href="{{ url_for('public.index') }}">
+              {% if lang == 'te' %}హోమ్{% else %}Home{% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link public-nav-link" href="{{ url_for('public.about') }}">
+              {% if lang == 'te' %}మా గురించి{% else %}About Us{% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link public-nav-link" href="{{ url_for('public.services_page') }}">
+              {% if lang == 'te' %}సేవలు{% else %}Services{% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link public-nav-link" href="{{ url_for('public.materials_specifications') }}">
+              {% if lang == 'te' %}నిర్మాణ సామగ్రి{% else %}Materials & Specs{% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link public-nav-link" href="{{ url_for('public.portfolio') }}">
+              {% if lang == 'te' %}ప్రాజెక్టులు{% else %}Projects Portfolio{% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link public-nav-link" href="{{ url_for('estimation.index') }}">
+              {% if lang == 'te' %}ఖర్చు అంచనా{% else %}Cost Estimator{% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link public-nav-link" href="{{ url_for('chatbot.index') }}">
+              <span class="badge bg-warning text-dark me-1">AI</span> {% if lang == 'te' %}సహాయకుడు{% else %}AI Assistant{% endif %}
+            </a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-mcb-primary btn-sm px-3" href="{{ url_for('public.contact') }}">
+              <i class="bi bi-chat-left-text me-1"></i> {% if lang == 'te' %}సంప్రదించండి{% else %}Get a Quote{% endif %}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Page Content -->
+  {% block content %}{% endblock %}
+
+  <!-- Floating Call Button -->
+  <div class="floating-cta">
+    <a href="tel:{{ primary_phone }}" class="floating-btn-call" title="Call Builder Sargu Sanju">
+      <i class="bi bi-telephone-fill"></i>
+    </a>
+  </div>
+
+  <!-- Public Footer -->
+  <footer class="bg-dark text-white pt-5 pb-4 mt-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <img src="{{ url_for('static', filename='images/mcb_logo.svg') }}" alt="MCB Logo" height="50" class="mb-3 bg-white p-2 rounded">
+          <p class="text-secondary small mb-2">
+            {% if lang == 'te' %}
+              మమత కన్‌స్ట్రక్షన్స్ అండ్ బిల్డర్స్ — వరంగల్ మరియు పరిసర ప్రాంతాల్లో నాణ్యమైన గృహ నిర్మాణ సేవలను విశ్వసనీయంగా అందిస్తున్నాము.
+            {% else %}
+              Mamatha Constructions & Builders (MCB) is Warangal's trusted residential construction partner, delivering turnkey duplexes, villas, and modern residential structures.
+            {% endif %}
+          </p>
+          <div class="text-warning small fw-bold">
+            BUILDER: {{ primary_builder }}
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+          <h6 class="text-uppercase fw-bold text-warning mb-3">Quick Links</h6>
+          <ul class="list-unstyled text-secondary small">
+            <li class="mb-2"><a href="{{ url_for('public.index') }}" class="text-white text-decoration-none">Home</a></li>
+            <li class="mb-2"><a href="{{ url_for('public.about') }}" class="text-white text-decoration-none">About Company</a></li>
+            <li class="mb-2"><a href="{{ url_for('public.services_page') }}" class="text-white text-decoration-none">Services</a></li>
+            <li class="mb-2"><a href="{{ url_for('public.portfolio') }}" class="text-white text-decoration-none">Projects Portfolio</a></li>
+            <li class="mb-2"><a href="{{ url_for('public.materials_specifications') }}" class="text-white text-decoration-none">Materials & Specs</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3 col-md-4">
+          <h6 class="text-uppercase fw-bold text-warning mb-3">Smart Tools</h6>
+          <ul class="list-unstyled text-secondary small">
+            <li class="mb-2"><a href="{{ url_for('estimation.index') }}" class="text-white text-decoration-none">AI Cost Estimator</a></li>
+            <li class="mb-2"><a href="{{ url_for('materials.prediction') }}" class="text-white text-decoration-none">Material Quantity Forecaster</a></li>
+            <li class="mb-2"><a href="{{ url_for('chatbot.index') }}" class="text-white text-decoration-none">Bilingual AI Chatbot</a></li>
+            <li class="mb-2"><a href="{{ url_for('auth.login') }}" class="text-white text-decoration-none">Site Engineer Diary Portal</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3 col-md-4">
+          <h6 class="text-uppercase fw-bold text-warning mb-3">Contact Builder</h6>
+          <ul class="list-unstyled text-secondary small">
+            <li class="mb-2"><i class="bi bi-person-fill text-warning me-2"></i> {{ primary_builder }}</li>
+            <li class="mb-2"><i class="bi bi-telephone-fill text-warning me-2"></i> <a href="tel:{{ primary_phone }}" class="text-white text-decoration-none">+91 {{ primary_phone }}</a></li>
+            <li class="mb-2"><i class="bi bi-geo-alt-fill text-warning me-2"></i> {{ office_address }}</li>
+            <li class="mb-2"><i class="bi bi-clock-fill text-warning me-2"></i> Mon - Sat: 8:00 AM - 7:30 PM</li>
+          </ul>
+        </div>
+      </div>
+
+      <hr class="border-secondary my-4">
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center small text-secondary">
+        <div>&copy; {{ current_year }} {{ company_name }}. All Rights Reserved.</div>
+        <div>Engineered with AI, Machine Learning &amp; Deep Learning by Google DeepMind Agentic Systems.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

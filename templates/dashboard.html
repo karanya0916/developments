@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Executive Construction Dashboard{% endblock %}
+{% block page_title %}Executive Construction Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Top Stats Metric Row -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="mcb-metric-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="mcb-metric-title">Total Projects</div>
+          <div class="mcb-metric-value">{{ kpis.total_projects }}</div>
+          <div class="mcb-metric-subtitle">
+            <span class="text-success fw-bold">{{ kpis.active_projects }} Active</span> | 
+            <span class="text-danger fw-bold">{{ kpis.delayed_projects }} Delayed</span>
+          </div>
+        </div>
+        <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning-emphasis">
+          <i class="bi bi-building fs-3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="mcb-metric-card" style="border-left-color: #3b82f6;">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="mcb-metric-title">Budget Committed</div>
+          <div class="mcb-metric-value">₹{{ "{:,.1f}".format(kpis.total_estimated_budget / 100000.0) }}L</div>
+          <div class="mcb-metric-subtitle">
+            Spent: ₹{{ "{:,.1f}".format(kpis.total_actual_expenditure / 100000.0) }}L ({{ kpis.budget_spent_pct }}%)
+          </div>
+        </div>
+        <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary">
+          <i class="bi bi-cash-stack fs-3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="mcb-metric-card" style="border-left-color: #10b981;">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="mcb-metric-title">Material Inventory</div>
+          <div class="mcb-metric-value">{{ kpis.total_materials_count }} <span class="fs-6 fw-normal text-muted">Items</span></div>
+          <div class="mcb-metric-subtitle">
+            {% if kpis.low_stock_count > 0 %}
+              <span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> {{ kpis.low_stock_count }} Low Stock</span>
+            {% else %}
+              <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Stock Healthy</span>
+            {% endif %}
+             | Val: ₹{{ "{:,.1f}".format(kpis.warehouse_valuation / 100000.0) }}L
+          </div>
+        </div>
+        <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
+          <i class="bi bi-boxes fs-3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="mcb-metric-card" style="border-left-color: #8b5cf6;">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="mcb-metric-title">Workforce on Site</div>
+          <div class="mcb-metric-value">{{ kpis.present_workers_today }} / {{ kpis.active_workers }}</div>
+          <div class="mcb-metric-subtitle">
+            Attendance: <span class="fw-bold text-dark">{{ kpis.attendance_rate }}%</span> | Wages: ₹{{ "{:,.0f}".format(kpis.daily_wages_sum) }}
+          </div>
+        </div>
+        <div class="rounded-circle bg-purple bg-opacity-10 p-3 text-dark">
+          <i class="bi bi-people-fill fs-3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Weather & AI Delay Risk Alert Row -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-6">
+    <div class="card border rounded-4 shadow-sm h-100 bg-white">
+      <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-cloud-sun-fill text-warning me-2"></i> Live Weather &amp; Civil Pouring Advisory</h6>
+        <span class="badge bg-light text-dark border">{{ weather.location }}</span>
+      </div>
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <div class="h2 fw-bold text-dark mb-0">{{ weather.temperature }}°C</div>
+            <div class="text-muted small">{{ weather.condition }}</div>
+          </div>
+          <div class="text-end small text-muted">
+            <div><i class="bi bi-droplet-fill text-info"></i> Humidity: <strong>{{ weather.humidity }}%</strong></div>
+            <div><i class="bi bi-cloud-rain-fill text-primary"></i> Rain Probability: <strong>{{ weather.rain_chance }}%</strong></div>
+            <div><i class="bi bi-wind text-secondary"></i> Wind: <strong>{{ weather.wind_speed }} km/h</strong></div>
+          </div>
+        </div>
+        <div class="alert {% if weather.advisory.status == 'Critical Warning' %}alert-danger{% elif weather.advisory.status == 'Precaution Needed' %}alert-warning{% else %}alert-success{% endif %} p-2 mb-0 small rounded-3">
+          <strong>Civil Engineering Recommendation:</strong> {{ weather.advisory.advisory_text }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card border rounded-4 shadow-sm h-100 bg-white">
+      <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-cpu-fill text-primary me-2"></i> ML Project Delay Risk Analysis</h6>
+        <span class="badge bg-primary text-white">GradientBoosting Model</span>
+      </div>
+      <div class="card-body p-3">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0 align-middle">
+            <thead class="table-light text-muted small">
+              <tr>
+                <th>Project Name</th>
+                <th>Progress</th>
+                <th>ML Risk Assessment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pr in project_risks %}
+              <tr>
+                <td class="fw-semibold text-dark small">{{ pr.name }}</td>
+                <td style="width: 30%;">
+                  <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-warning" style="width: {{ pr.completion }}%;"></div>
+                  </div>
+                  <span style="font-size: 0.72rem;" class="text-muted">{{ pr.completion }}%</span>
+                </td>
+                <td>
+                  <span class="badge bg-{{ pr.risk_badge }} small">{{ pr.risk_label }}</span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row: Budget vs Actual + Project Status & Expenses -->
+<div class="row g-4 mb-4">
+  <div class="col-lg-8">
+    <div class="card border rounded-4 shadow-sm bg-white">
+      <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-fill text-warning me-2"></i> Estimated Budget vs Actual Expenditure (Lakhs ₹)</h6>
+        <span class="badge bg-light text-muted border">Project Level Variance</span>
+      </div>
+      <div class="card-body p-3">
+        <canvas id="budgetVsActualChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card border rounded-4 shadow-sm bg-white h-100">
+      <div class="card-header bg-white border-bottom p-3">
+        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-pie-chart-fill text-success me-2"></i> Project Status Distribution</h6>
+      </div>
+      <div class="card-body p-3 d-flex align-items-center justify-content-center">
+        <canvas id="projectStatusChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Site Diary & Inventory Low-Stock Alerts Row -->
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card border rounded-4 shadow-sm bg-white">
+      <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-journal-text text-warning me-2"></i> Recent Site Diary &amp; Daily Expenses</h6>
+        <a href="{{ url_for('site_diary.index') }}" class="btn btn-outline-dark btn-sm">View All Logs</a>
+      </div>
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+          {% for diary in recent_diary %}
+          <div class="list-group-item p-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="fw-bold text-dark">{{ diary.project_name }}</span>
+              <span class="badge bg-light text-dark border">{{ diary.entry_date }} | {{ diary.shift_type }}</span>
+            </div>
+            <p class="text-muted small mb-2 text-truncate" style="max-width: 580px;">{{ diary.work_carried_out }}</p>
+            <div class="d-flex justify-content-between align-items-center small">
+              <span class="text-muted">Logged by: <strong>{{ diary.author_name or 'Site Engineer' }}</strong></span>
+              <span class="text-danger fw-bold">Daily Expense: ₹{{ "{:,.2f}".format(diary.daily_expense_total) }}</span>
+            </div>
+          </div>
+          {% else %}
+          <div class="p-3 text-center text-muted small">No recent diary entries recorded.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card border rounded-4 shadow-sm bg-white">
+      <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-exclamation-octagon-fill text-danger me-2"></i> Inventory Shortage Warnings</h6>
+        <a href="{{ url_for('materials.inventory', status='low_stock') }}" class="btn btn-outline-danger btn-sm">Restock</a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover table-sm mb-0 align-middle">
+            <thead class="table-light small text-muted">
+              <tr>
+                <th class="ps-3">Material</th>
+                <th>Stock</th>
+                <th>Min Limit</th>
+                <th>Supplier</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for mat in low_stock_materials %}
+              <tr>
+                <td class="ps-3 fw-semibold small text-dark">{{ mat.name }}</td>
+                <td><span class="badge bg-danger-subtle text-danger fw-bold">{{ mat.current_stock }} {{ mat.unit }}</span></td>
+                <td class="small text-muted">{{ mat.min_threshold }} {{ mat.unit }}</td>
+                <td class="small text-muted">{{ mat.supplier_name or 'MCB Depot' }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="p-3 text-center text-success small">
+                  <i class="bi bi-check2-circle me-1"></i> All materials are well above minimum safety thresholds.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.dashboardChartData = {
+    statusLabels: {{ charts.project_status_labels | tojson }},
+    statusCounts: {{ charts.project_status_counts | tojson }},
+    expenseLabels: {{ charts.expense_labels | tojson }},
+    expenseData: {{ charts.expense_data | tojson }},
+    projectNames: {{ charts.project_names | tojson }},
+    projectBudgets: {{ charts.project_budgets | tojson }},
+    projectActuals: {{ charts.project_actuals | tojson }}
+  };
+</script>
+{% endblock %}
